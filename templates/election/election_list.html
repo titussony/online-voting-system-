@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Ongoing Elections</h1>
+
+{% if elections %}
+
+    {% for election in elections %}
+
+        <div class="election-card">
+
+            <h2>{{ election.name }}</h2>
+
+            {% if election.description %}
+                <p>{{ election.description }}</p>
+            {% endif %}
+
+            <p>
+                <strong>Start:</strong>
+                {{ election.start_date }}
+            </p>
+
+            <p>
+                <strong>End:</strong>
+                {{ election.end_date }}
+            </p>
+
+            <a href="{% url 'election_detail' election.id %}">
+                View Election
+            </a>
+
+        </div>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>There are currently no ongoing elections.</p>
+
+{% endif %}
+
+{% endblock %}

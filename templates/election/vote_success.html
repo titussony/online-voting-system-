@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Vote Confirmation | ProjectVote
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+    .vote-success-container {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .vote-success-content {
+        padding-top: 35px;
+    }
+
+    .vote-election-name {
+        margin: 0 0 8px;
+
+        color: var(--text);
+
+        font-size: clamp(2rem, 4vw, 2.8rem);
+
+        font-weight: 700;
+    }
+
+    .vote-election-description {
+        margin: 0 0 10px;
+
+        color: var(--text-muted);
+
+        font-size: 1rem;
+    }
+
+    .vote-meta {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 7px;
+
+        margin-top: 15px;
+
+        margin-bottom: 8px;
+
+        color: var(--text-muted);
+
+        font-size: 0.92rem;
+    }
+
+    .vote-meta strong {
+        color: var(--text);
+    }
+
+    .vote-meta .ongoing {
+        color: #72e2b1;
+    }
+
+
+    /* =====================================================
+       DIVIDER
+    ====================================================== */
+
+    .success-divider {
+        width: 100%;
+
+        height: 1px;
+
+        margin: 10px 0 15px;
+
+        background:
+            linear-gradient(
+                90deg,
+                rgba(130, 170, 205, 0.45),
+                rgba(130, 170, 205, 0.12)
+            );
+    }
+
+
+    /* =====================================================
+       ALREADY VOTED MESSAGE
+    ====================================================== */
+
+    .already-voted-title {
+        margin: 0 0 8px;
+
+        color: var(--text);
+
+        font-size: 2rem;
+
+        font-weight: 700;
+    }
+
+    .already-voted-text {
+        margin: 0;
+
+        color: var(--text-muted);
+
+        font-size: 1rem;
+    }
+
+
+    /* =====================================================
+       VOTE CONFIRMATION CARD
+    ====================================================== */
+
+    .confirmation-card {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 25px;
+
+        margin-top: 28px;
+
+        padding: 22px 24px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(16, 43, 67, 0.96),
+                rgba(11, 32, 51, 0.96)
+            );
+
+        border: 1px solid var(--border);
+
+        border-radius: 14px;
+
+        box-shadow:
+            0 12px 35px rgba(0, 0, 0, 0.20);
+    }
+
+    .confirmation-info {
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        min-width: 0;
+    }
+
+    .confirmation-icon {
+        width: 46px;
+        height: 46px;
+
+        flex-shrink: 0;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 12px;
+
+        color: #72e2b1;
+
+        background:
+            rgba(53, 201, 139, 0.10);
+
+        border:
+            1px solid
+            rgba(53, 201, 139, 0.22);
+
+        font-size: 1.2rem;
+
+        font-weight: 700;
+    }
+
+    .confirmation-info h3 {
+        margin: 0 0 5px;
+
+        color: var(--text);
+
+        font-size: 1rem;
+    }
+
+    .confirmation-info p {
+        margin: 0;
+
+        color: var(--text-muted);
+
+        font-size: 0.82rem;
+
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       DOWNLOAD BUTTON
+    ====================================================== */
+
+    .download-confirmation-btn {
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 9px;
+
+        flex-shrink: 0;
+
+        min-height: 44px;
+
+        padding: 0 19px;
+
+        border-radius: 9px;
+
+        color: white;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--blue),
+                #1261ad
+            );
+
+        border:
+            1px solid
+            rgba(90, 170, 235, 0.25);
+
+        box-shadow:
+            0 6px 18px rgba(25, 118, 210, 0.18);
+
+        font-size: 0.82rem;
+
+        font-weight: 700;
+
+        text-decoration: none;
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            opacity 0.2s ease;
+    }
+
+    .download-confirmation-btn:hover {
+        transform: translateY(-2px);
+
+        opacity: 0.95;
+
+        color: white;
+
+        box-shadow:
+            0 10px 25px rgba(25, 118, 210, 0.28);
+    }
+
+    .download-icon {
+        font-size: 1rem;
+    }
+
+
+    /* =====================================================
+       BACK LINK
+    ====================================================== */
+
+    .back-link {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        margin-top: 28px;
+
+        color: var(--text);
+
+        font-size: 0.9rem;
+
+        text-decoration: none;
+
+        transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: var(--gold-light);
+    }
+
+
+    /* =====================================================
+       NO VOTE FOUND
+    ====================================================== */
+
+    .no-vote-message {
+        margin-top: 25px;
+
+        padding: 18px 20px;
+
+        background:
+            rgba(229, 185, 95, 0.06);
+
+        border:
+            1px solid
+            rgba(229, 185, 95, 0.18);
+
+        border-radius: 10px;
+
+        color: var(--text-muted);
+
+        font-size: 0.85rem;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+
+    @media (max-width: 650px) {
+
+        .vote-success-content {
+            padding-top: 25px;
+        }
+
+        .confirmation-card {
+            align-items: flex-start;
+
+            flex-direction: column;
+        }
+
+        .download-confirmation-btn {
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="vote-success-container">
+
+    <div class="vote-success-content">
+
+        <!-- =================================================
+             ELECTION INFORMATION
+        ================================================== -->
+
+        <h1 class="vote-election-name">
+            {{ election.name }}
+        </h1>
+
+
+        {% if election.description %}
+
+            <p class="vote-election-description">
+                {{ election.description }}
+            </p>
+
+        {% endif %}
+
+
+        <div class="vote-meta">
+
+            <div>
+                <strong>Start:</strong>
+                {{ election.start_date }}
+            </div>
+
+            <div>
+                <strong>End:</strong>
+                {{ election.end_date }}
+            </div>
+
+            <div>
+                <strong>Status:</strong>
+
+                <span class="ongoing">
+                    {{ election.get_status_display }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="success-divider"></div>
+
+
+        <!-- =================================================
+             ALREADY VOTED
+        ================================================== -->
+
+        <h2 class="already-voted-title">
+            You have already voted
+        </h2>
+
+        <p class="already-voted-text">
+            Your vote for this election has already been recorded.
+        </p>
+
+
+        <!-- =================================================
+             PDF CONFIRMATION
+        ================================================== -->
+
+        {% if vote %}
+
+            <div class="confirmation-card">
+
+                <div class="confirmation-info">
+
+                    <div class="confirmation-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Vote Confirmation
+                        </h3>
+
+                        <p>
+                            Download a PDF confirmation of your recorded vote
+                            for your personal records.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="{% url 'download_vote_confirmation' vote.id %}"
+                    class="download-confirmation-btn"
+                >
+
+                    <span class="download-icon">
+                        ↓
+                    </span>
+
+                    Download Vote Confirmation
+
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <div class="no-vote-message">
+
+                Your vote was recorded, but the confirmation document
+                could not be located. Please return to your dashboard.
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             BACK
+        ================================================== -->
+
+        <a
+            href="{% url 'election_list' %}"
+            class="back-link"
+        >
+            ← Back to Elections
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

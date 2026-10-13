@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Election History - ProjectVote</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #07111f 0%,
+                    #0b1729 50%,
+                    #0d1d31 100%
+                );
+
+            color: #e8f1fb;
+        }
+
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 72px;
+
+            padding: 0 6%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            background: rgba(7, 17, 31, 0.96);
+
+            border-bottom:
+                1px solid rgba(108, 150, 192, 0.15);
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            backdrop-filter: blur(12px);
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #f4f8fd;
+
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #176b83,
+                    #218f9b
+                );
+
+            color: white;
+
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+
+        .admin-label {
+            color: #8197b0;
+            font-size: 13px;
+        }
+
+
+        .logout-btn {
+            padding: 9px 15px;
+
+            border-radius: 8px;
+
+            color: #c9d8e8;
+            background: #15263c;
+
+            border:
+                1px solid rgba(110, 148, 184, 0.18);
+
+            font-size: 13px;
+
+            transition: 0.2s ease;
+        }
+
+
+        .logout-btn:hover {
+            background: #1c3552;
+            color: white;
+        }
+
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page {
+            width: min(1100px, 92%);
+
+            margin: 0 auto;
+
+            padding: 42px 0 70px;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .header-text h1 {
+            margin: 0 0 8px;
+
+            font-size: 34px;
+
+            color: #f3f8fe;
+        }
+
+
+        .header-text p {
+            margin: 0;
+
+            color: #8ea3bb;
+
+            font-size: 15px;
+        }
+
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 11px 18px;
+
+            border-radius: 10px;
+
+            color: #dcecff;
+
+            background: #172a42;
+
+            border:
+                1px solid rgba(93, 145, 190, 0.22);
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+
+        .back-btn:hover {
+            background: #1d3858;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =========================
+           INTRO
+        ========================= */
+
+        .intro {
+            padding: 20px 23px;
+
+            margin-bottom: 25px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(24, 53, 84, 0.95),
+                    rgba(14, 35, 59, 0.95)
+                );
+
+            border:
+                1px solid rgba(72, 151, 191, 0.16);
+        }
+
+
+        .intro h2 {
+            margin: 0 0 7px;
+
+            font-size: 18px;
+
+            color: #edf6ff;
+        }
+
+
+        .intro p {
+            margin: 0;
+
+            color: #9db1c7;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =========================
+           ELECTION LIST
+        ========================= */
+
+        .election-list {
+            display: flex;
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+
+        .election-row {
+            width: 100%;
+
+            padding: 18px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #111f32,
+                    #0e1b2d
+                );
+
+            border:
+                1px solid rgba(105, 145, 182, 0.15);
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .election-row:hover {
+            background:
+                linear-gradient(
+                    135deg,
+                    #172b45,
+                    #112238
+                );
+
+            border-color:
+                rgba(65, 177, 188, 0.35);
+
+            transform: translateX(3px);
+        }
+
+
+        .election-main {
+            min-width: 0;
+        }
+
+
+        .election-name {
+            margin: 0 0 6px;
+
+            color: #edf5fd;
+
+            font-size: 17px;
+            font-weight: 650;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .election-meta {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 14px;
+
+            color: #7f96ae;
+
+            font-size: 12px;
+        }
+
+
+        .election-right {
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+
+            flex-shrink: 0;
+        }
+
+
+        .closed-badge {
+            padding: 6px 11px;
+
+            border-radius: 999px;
+
+            color: #b9c8d8;
+
+            background:
+                rgba(119, 139, 160, 0.12);
+
+            border:
+                1px solid rgba(119, 139, 160, 0.18);
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+
+        .arrow {
+            color: #65bdc7;
+
+            font-size: 22px;
+
+            transition: transform 0.2s ease;
+        }
+
+
+        .election-row:hover .arrow {
+            transform: translateX(4px);
+        }
+
+
+        /* =========================
+           EMPTY STATE
+        ========================= */
+
+        .empty-state {
+            padding: 65px 25px;
+
+            text-align: center;
+
+            background: #101e31;
+
+            border:
+                1px dashed rgba(103, 144, 181, 0.2);
+
+            border-radius: 16px;
+        }
+
+
+        .empty-icon {
+            width: 65px;
+            height: 65px;
+
+            margin: 0 auto 17px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                rgba(56, 105, 143, 0.15);
+
+            color: #76b7d2;
+
+            font-size: 28px;
+        }
+
+
+        .empty-state h2 {
+            margin: 0 0 8px;
+
+            color: #eaf3fc;
+
+            font-size: 21px;
+        }
+
+
+        .empty-state p {
+            margin: 0 auto;
+
+            max-width: 520px;
+
+            color: #8499b0;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =========================
+           MODAL BACKGROUND
+        ========================= */
+
+        .modal-overlay {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 1000;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+
+            background:
+                rgba(2, 8, 16, 0.78);
+
+            backdrop-filter: blur(7px);
+        }
+
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            width: min(850px, 100%);
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #112238,
+                    #0b1829
+                );
+
+            border:
+                1px solid rgba(87, 157, 190, 0.25);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.5);
+
+            animation:
+                modalIn 0.2s ease;
+        }
+
+
+        @keyframes modalIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+        }
+
+
+        /* =========================
+           MODAL HEADER
+        ========================= */
+
+        .modal-header {
+            padding: 22px 25px;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.07);
+        }
+
+
+        .modal-header h2 {
+            margin: 0 0 7px;
+
+            color: #f3f8ff;
+
+            font-size: 23px;
+        }
+
+
+        .modal-header p {
+            margin: 0;
+
+            color: #8197ae;
+
+            font-size: 12px;
+        }
+
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #182b43;
+
+            color: #a9bed2;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+
+        .close-btn:hover {
+            background: #263d59;
+            color: white;
+        }
+
+
+        /* =========================
+           MODAL BODY
+        ========================= */
+
+        .modal-body {
+            padding: 25px;
+        }
+
+
+        .result-info {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .result-info-box {
+            padding: 14px;
+
+            border-radius: 11px;
+
+            background: #091625;
+
+            border:
+                1px solid rgba(108, 147, 183, 0.12);
+        }
+
+
+        .result-info-label {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #7188a1;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.7px;
+
+            font-weight: 700;
+        }
+
+
+        .result-info-value {
+            color: #dce8f5;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           RESULT SECTION
+        ========================= */
+
+        .results-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 12px;
+        }
+
+
+        .results-heading h3 {
+            margin: 0;
+
+            color: #edf5fc;
+
+            font-size: 18px;
+        }
+
+
+        .published-label {
+            color: #72c5cc;
+
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           CANDIDATE RESULT ROW
+        ========================= */
+
+        .candidate-results {
+            display: flex;
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        .candidate-row {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                auto;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 15px 17px;
+
+            background: #0d1b2c;
+
+            border:
+                1px solid rgba(108, 147, 183, 0.11);
+
+            border-radius: 10px;
+        }
+
+
+        .candidate-name {
+            color: #dce8f5;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .candidate-party {
+            margin-top: 4px;
+
+            color: #748ba4;
+
+            font-size: 12px;
+        }
+
+
+        .candidate-votes {
+            text-align: right;
+        }
+
+
+        .vote-number {
+            display: block;
+
+            color: #f1f7fd;
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+
+        .vote-label {
+            color: #7188a0;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+        }
+
+
+        /* =========================
+           MODAL FOOTER
+        ========================= */
+
+        .modal-footer {
+            padding: 18px 25px;
+
+            display: flex;
+            justify-content: flex-end;
+
+            border-top:
+                1px solid rgba(255, 255, 255, 0.06);
+        }
+
+
+        .modal-close {
+            padding: 10px 18px;
+
+            border-radius: 9px;
+
+            border: 1px solid rgba(105, 145, 182, 0.2);
+
+            background: #172a42;
+
+            color: #d6e5f4;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .modal-close:hover {
+            background: #203a58;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 4%;
+            }
+
+
+            .admin-label {
+                display: none;
+            }
+
+
+            .page {
+                width: 94%;
+
+                padding-top: 28px;
+            }
+
+
+            .page-header {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .header-text h1 {
+                font-size: 28px;
+            }
+
+
+            .back-btn {
+                width: 100%;
+
+                justify-content: center;
+            }
+
+
+            .election-row {
+                padding: 16px;
+            }
+
+
+            .election-right {
+                gap: 8px;
+            }
+
+
+            .election-meta {
+                gap: 7px;
+            }
+
+
+            .result-info {
+                grid-template-columns: 1fr;
+            }
+
+
+            .modal-overlay {
+                padding: 12px;
+            }
+
+
+            .modal-header,
+            .modal-body {
+                padding: 18px;
+            }
+
+
+            .modal-footer {
+                padding: 15px 18px;
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav class="navbar">
+
+        <a
+            href="{% url 'admin_dashboard' %}"
+            class="brand"
+        >
+
+            <span class="brand-mark">
+                ✓
+            </span>
+
+            <span>
+                ProjectVote
+            </span>
+
+        </a>
+
+
+        <div class="nav-right">
+
+            <span class="admin-label">
+                Administration
+            </span>
+
+            <a
+                href="{% url 'admin_logout' %}"
+                class="logout-btn"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="page">
+
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div class="header-text">
+
+                <h1>
+                    Election History
+                </h1>
+
+                <p>
+                    Select an election to view its complete historical results.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'manage_elections' %}"
+                class="back-btn"
+            >
+                ← Back to Manage Elections
+            </a>
+
+        </div>
+
+
+
+        <!-- INTRO -->
+
+        <div class="intro">
+
+            <h2>
+                Archived Elections
+            </h2>
+
+            <p>
+                Closed elections are preserved here. Click any election below
+                to view its complete information, candidates, votes and
+                published results.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             ELECTION LIST
+        ========================= -->
+
+        {% if elections %}
+
+            <div class="election-list">
+
+                {% for election in elections %}
+
+
+                    <div
+                        class="election-row"
+                        onclick="openElectionModal('{{ election.id }}')"
+                    >
+
+
+                        <div class="election-main">
+
+                            <h2 class="election-name">
+                                {{ election.name }}
+                            </h2>
+
+
+                            <div class="election-meta">
+
+                                <span>
+                                    ID #{{ election.id }}
+                                </span>
+
+                                <span>
+                                    {{ election.start_date|date:"d M Y" }}
+                                    –
+                                    {{ election.end_date|date:"d M Y" }}
+                                </span>
+
+                                <span>
+                                    {{ election.candidates.count }}
+                                    Candidates
+                                </span>
+
+                                <span>
+                                    {{ election.votes.count }}
+                                    Votes
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="election-right">
+
+                            <span class="closed-badge">
+                                CLOSED
+                            </span>
+
+                            <span class="arrow">
+                                →
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =========================
+                         HIDDEN MODAL DATA
+                    ========================= -->
+
+                    <div
+                        id="election-data-{{ election.id }}"
+                        style="display: none;"
+                    >
+
+                        <div class="data-name">
+                            {{ election.name }}
+                        </div>
+
+
+                        <div class="data-id">
+                            {{ election.id }}
+                        </div>
+
+
+                        <div class="data-description">
+                            {{ election.description|default:"No description provided." }}
+                        </div>
+
+
+                        <div class="data-start">
+                            {{ election.start_date|date:"d M Y, h:i A" }}
+                        </div>
+
+
+                        <div class="data-end">
+                            {{ election.end_date|date:"d M Y, h:i A" }}
+                        </div>
+
+
+                        <div class="data-eligibility">
+                            {{ election.get_eligibility_type_display }}
+                        </div>
+
+
+                        <div class="data-votes">
+                            {{ election.votes.count }}
+                        </div>
+
+
+                        <div class="data-candidates">
+                            {{ election.candidates.count }}
+                        </div>
+
+
+                        <div class="data-selected">
+                            {{ election.eligible_voters.count }}
+                        </div>
+
+
+                        <div class="data-published">
+
+                            {% if election.results_published %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- Candidate Results -->
+
+                        <div class="data-candidate-list">
+
+
+                            {% for candidate in election.candidates.all %}
+
+                                <div class="candidate-data">
+
+                                    <span class="candidate-data-name">
+                                        {{ candidate.name }}
+                                    </span>
+
+
+                                    <span class="candidate-data-party">
+                                        {{ candidate.party|default:"Independent" }}
+                                    </span>
+
+
+                                    <span class="candidate-data-votes">
+                                        {{ candidate.votes.count }}
+                                    </span>
+
+                                </div>
+
+                            {% empty %}
+
+                                <div class="candidate-data">
+
+                                    <span class="candidate-data-name">
+                                        No candidates
+                                    </span>
+
+                                    <span class="candidate-data-party">
+                                        -
+                                    </span>
+
+                                    <span class="candidate-data-votes">
+                                        0
+                                    </span>
+
+                                </div>
+
+                            {% endfor %}
+
+
+                        </div>
+
+                    </div>
+
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ◷
+                </div>
+
+
+                <h2>
+                    No Election History
+                </h2>
+
+
+                <p>
+                    There are currently no closed elections. Elections that
+                    are closed will automatically appear here.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </main>
+
+
+
+    <!-- =========================
+         MODAL
+    ========================= -->
+
+    <div
+        id="electionModal"
+        class="modal-overlay"
+        onclick="closeElectionModal(event)"
+    >
+
+
+        <div
+            class="modal"
+            onclick="event.stopPropagation()"
+        >
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2 id="modalElectionName">
+                        Election
+                    </h2>
+
+                    <p id="modalElectionId">
+                        Election details
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-btn"
+                    onclick="closeElectionModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <!-- MODAL BODY -->
+
+            <div class="modal-body">
+
+
+                <!-- Election Information -->
+
+                <div class="result-info">
+
+
+                    <div class="result-info-box">
+
+                        <span class="result-info-label">
+                            Start Date
+                        </span>
+
+                        <span
+                            class="result-info-value"
+                            id="modalStart"
+                        >
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-info-box">
+
+                        <span class="result-info-label">
+                            End Date
+                        </span>
+
+                        <span
+                            class="result-info-value"
+                            id="modalEnd"
+                        >
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-info-box">
+
+                        <span class="result-info-label">
+                            Eligibility
+                        </span>
+
+                        <span
+                            class="result-info-value"
+                            id="modalEligibility"
+                        >
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-info-box">
+
+                        <span class="result-info-label">
+                            Total Votes
+                        </span>
+
+                        <span
+                            class="result-info-value"
+                            id="modalVotes"
+                        >
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-info-box">
+
+                        <span class="result-info-label">
+                            Candidates
+                        </span>
+
+                        <span
+                            class="result-info-value"
+                            id="modalCandidates"
+                        >
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-info-box">
+
+                        <span class="result-info-label">
+                            Selected Voters
+                        </span>
+
+                        <span
+                            class="result-info-value"
+                            id="modalSelected"
+                        >
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- Description -->
+
+                <div
+                    class="description-section"
+                    style="margin-bottom: 25px;"
+                >
+
+                    <div class="results-heading">
+
+                        <h3>
+                            Election Description
+                        </h3>
+
+                    </div>
+
+
+                    <p
+                        id="modalDescription"
+                        style="
+                            margin:0;
+                            color:#9db1c7;
+                            font-size:14px;
+                            line-height:1.7;
+                        "
+                    >
+                    </p>
+
+                </div>
+
+
+
+                <!-- RESULTS -->
+
+                <div class="results-heading">
+
+                    <h3>
+                        Election Results
+                    </h3>
+
+
+                    <span
+                        id="modalPublished"
+                        class="published-label"
+                    >
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="modalCandidateResults"
+                    class="candidate-results"
+                >
+                </div>
+
+
+            </div>
+
+
+
+            <!-- MODAL FOOTER -->
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    onclick="closeElectionModal()"
+                >
+                    Close
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        function openElectionModal(electionId) {
+
+            const data =
+                document.getElementById(
+                    "election-data-" + electionId
+                );
+
+
+            if (!data) {
+                return;
+            }
+
+
+            const name =
+                data.querySelector(".data-name").textContent.trim();
+
+
+            const id =
+                data.querySelector(".data-id").textContent.trim();
+
+
+            const description =
+                data.querySelector(".data-description").textContent.trim();
+
+
+            const start =
+                data.querySelector(".data-start").textContent.trim();
+
+
+            const end =
+                data.querySelector(".data-end").textContent.trim();
+
+
+            const eligibility =
+                data.querySelector(".data-eligibility").textContent.trim();
+
+
+            const votes =
+                data.querySelector(".data-votes").textContent.trim();
+
+
+            const candidates =
+                data.querySelector(".data-candidates").textContent.trim();
+
+
+            const selected =
+                data.querySelector(".data-selected").textContent.trim();
+
+
+            const published =
+                data.querySelector(".data-published").textContent.trim();
+
+
+            document.getElementById(
+                "modalElectionName"
+            ).textContent = name;
+
+
+            document.getElementById(
+                "modalElectionId"
+            ).textContent =
+                "Election ID: #" + id;
+
+
+            document.getElementById(
+                "modalDescription"
+            ).textContent = description;
+
+
+            document.getElementById(
+                "modalStart"
+            ).textContent = start;
+
+
+            document.getElementById(
+                "modalEnd"
+            ).textContent = end;
+
+
+            document.getElementById(
+                "modalEligibility"
+            ).textContent = eligibility;
+
+
+            document.getElementById(
+                "modalVotes"
+            ).textContent = votes;
+
+
+            document.getElementById(
+                "modalCandidates"
+            ).textContent = candidates;
+
+
+            document.getElementById(
+                "modalSelected"
+            ).textContent = selected;
+
+
+            const publishedElement =
+                document.getElementById(
+                    "modalPublished"
+                );
+
+
+            if (published === "Yes") {
+
+                publishedElement.textContent =
+                    "✓ Results Published";
+
+            } else {
+
+                publishedElement.textContent =
+                    "Results Not Published";
+
+            }
+
+
+
+            /* =========================
+               CANDIDATE RESULTS
+            ========================= */
+
+            const candidateList =
+                data.querySelector(
+                    ".data-candidate-list"
+                );
+
+
+            const candidateResults =
+                document.getElementById(
+                    "modalCandidateResults"
+                );
+
+
+            candidateResults.innerHTML = "";
+
+
+            const candidateData =
+                candidateList.querySelectorAll(
+                    ".candidate-data"
+                );
+
+
+            candidateData.forEach(function(candidate) {
+
+                const candidateName =
+                    candidate
+                        .querySelector(
+                            ".candidate-data-name"
+                        )
+                        .textContent
+                        .trim();
+
+
+                const candidateParty =
+                    candidate
+                        .querySelector(
+                            ".candidate-data-party"
+                        )
+                        .textContent
+                        .trim();
+
+
+                const candidateVotes =
+                    candidate
+                        .querySelector(
+                            ".candidate-data-votes"
+                        )
+                        .textContent
+                        .trim();
+
+
+                const row =
+                    document.createElement("div");
+
+
+                row.className =
+                    "candidate-row";
+
+
+                row.innerHTML = `
+
+                    <div>
+
+                        <div class="candidate-name">
+                            ${escapeHtml(candidateName)}
+                        </div>
+
+                        <div class="candidate-party">
+                            ${escapeHtml(candidateParty)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="candidate-votes">
+
+                        <span class="vote-number">
+                            ${escapeHtml(candidateVotes)}
+                        </span>
+
+                        <span class="vote-label">
+                            Votes
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                candidateResults.appendChild(row);
+
+            });
+
+
+
+            /* =========================
+               OPEN MODAL
+            ========================= */
+
+            document
+                .getElementById("electionModal")
+                .classList
+                .add("active");
+
+
+            document.body.classList.add("modal-open");
+
+        }
+
+
+
+        function closeElectionModal(event) {
+
+            if (
+                event &&
+                event.target &&
+                event.target.id !== "electionModal"
+            ) {
+                return;
+            }
+
+
+            document
+                .getElementById("electionModal")
+                .classList
+                .remove("active");
+
+
+            document.body.classList.remove("modal-open");
+
+        }
+
+
+
+        /* =========================
+           ESCAPE KEY
+        ========================= */
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Escape") {
+
+                    closeElectionModal();
+
+                }
+
+            }
+        );
+
+
+
+        /* =========================
+           HTML ESCAPE
+        ========================= */
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent = value;
+
+            return div.innerHTML;
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

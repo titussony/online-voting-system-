@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Manage Candidates | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Manage Candidates</h1>
+
+    <p>
+        <a href="{% url 'admin_dashboard' %}">
+            ← Back to Dashboard
+        </a>
+    </p>
+
+    {% if show_old %}
+
+        <p>
+            <a href="{% url 'manage_candidates' %}">
+                ← Show Current Candidates
+            </a>
+        </p>
+
+        <h2>Older Election Candidates</h2>
+
+        <p>
+            These candidates belong to closed elections.
+        </p>
+
+    {% else %}
+
+        <p>
+            <a href="{% url 'create_candidate' %}">
+                + Add New Candidate
+            </a>
+        </p>
+
+        <p>
+            <a href="{% url 'manage_candidates' %}?show=old">
+                View Older Election Candidates
+            </a>
+        </p>
+
+        <h2>Current Election Candidates</h2>
+
+        <p>
+            Showing candidates from ongoing elections only.
+        </p>
+
+    {% endif %}
+
+    <hr>
+
+    {% if candidates %}
+
+        {% for candidate in candidates %}
+
+            <div>
+
+                <h2>{{ candidate.name }}</h2>
+
+                <p>
+                    <strong>Election:</strong>
+                    {{ candidate.election.name }}
+                </p>
+
+                <p>
+                    <strong>Election Status:</strong>
+                    {{ candidate.election.get_status_display }}
+                </p>
+
+                {% if candidate.party %}
+
+                    <p>
+                        <strong>Party:</strong>
+                        {{ candidate.party }}
+                    </p>
+
+                {% endif %}
+
+                {% if candidate.description %}
+
+                    <p>
+                        <strong>Description:</strong>
+                        {{ candidate.description }}
+                    </p>
+
+                {% endif %}
+
+                {% if candidate.photo %}
+
+                    <p>
+                        <strong>Photo:</strong>
+                    </p>
+
+                    <img
+                        src="{{ candidate.photo.url }}"
+                        alt="{{ candidate.name }}"
+                        width="150"
+                    >
+
+                {% else %}
+
+                    <p>
+                        No photo uploaded.
+                    </p>
+
+                {% endif %}
+
+                <br><br>
+
+                <a href="{% url 'edit_candidate' candidate.id %}">
+                    Edit
+                </a>
+
+                &nbsp; | &nbsp;
+
+                {% if candidate.votes.exists %}
+
+                    <span>
+                        Delete unavailable —
+                        votes have already been recorded
+                    </span>
+
+                {% else %}
+
+                    <a href="{% url 'delete_candidate' candidate.id %}">
+                        Delete
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        {% if show_old %}
+
+            <p>
+                No candidates from closed elections were found.
+            </p>
+
+        {% else %}
+
+            <p>
+                No candidates are currently associated
+                with an ongoing election.
+            </p>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

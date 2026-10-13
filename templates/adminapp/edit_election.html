@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Election | ProjectVote{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Edit Election</h1>
+
+    <p>
+        Update the details for:
+        <strong>{{ election.name }}</strong>
+    </p>
+
+    <hr>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <!-- ================================================= -->
+        <!-- ELECTION DETAILS -->
+        <!-- ================================================= -->
+
+        <h2>Election Details</h2>
+
+        <p>
+            {{ form.name.label_tag }}
+            <br>
+            {{ form.name }}
+            {{ form.name.errors }}
+        </p>
+
+        <p>
+            {{ form.description.label_tag }}
+            <br>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </p>
+
+        <p>
+            {{ form.start_date.label_tag }}
+            <br>
+            {{ form.start_date }}
+            {{ form.start_date.errors }}
+        </p>
+
+        <p>
+            {{ form.end_date.label_tag }}
+            <br>
+            {{ form.end_date }}
+            {{ form.end_date.errors }}
+        </p>
+
+        <p>
+            <strong>Current Status:</strong>
+            {{ election.get_status_display }}
+        </p>
+
+        <hr>
+
+        <!-- ================================================= -->
+        <!-- VOTER ELIGIBILITY -->
+        <!-- ================================================= -->
+
+        <h2>Voter Eligibility</h2>
+
+        <p>
+            Choose who can vote in this election.
+        </p>
+
+        <div id="eligibilityOptions">
+
+            {% for radio in form.eligibility_type %}
+
+                <p>
+                    {{ radio.tag }}
+                    {{ radio.choice_label }}
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+        {{ form.eligibility_type.errors }}
+
+        <!-- ================================================= -->
+        <!-- SELECTED AADHAAR SECTION -->
+        <!-- ================================================= -->
+
+        <div id="selectedAadhaarSection">
+
+            <hr>
+
+            <h3>Eligible Aadhaar Numbers</h3>
+
+            <p>
+                <strong>
+                    Current eligible voters:
+                    {{ eligible_count }}
+                </strong>
+            </p>
+
+            <p>
+                You can add, remove, or change the
+                Aadhaar numbers below.
+            </p>
+
+            <p>
+                {{ form.eligible_voter_ids }}
+            </p>
+
+            {{ form.eligible_voter_ids.errors }}
+
+            <p>
+                <small>
+                    Enter exactly 5 digits per Aadhaar number.
+                    Use one number per line or separate numbers
+                    with commas.
+                </small>
+            </p>
+
+            <h3>Upload CSV</h3>
+
+            <p>
+                {{ form.eligible_voters_file }}
+            </p>
+
+            {{ form.eligible_voters_file.errors }}
+
+            <p>
+                <small>
+                    CSV must contain a column named
+                    <strong>aadhaar_number</strong>.
+                </small>
+            </p>
+
+            <p>
+                <a
+                    href="{% url 'download_eligibility_csv' election.id %}"
+                >
+                    Download Current Eligibility CSV
+                </a>
+            </p>
+
+        </div>
+
+        <hr>
+
+        <!-- ================================================= -->
+        <!-- CANDIDATES -->
+        <!-- ================================================= -->
+
+        <h2>Candidates</h2>
+
+        <p>
+            Candidates currently associated with this election:
+        </p>
+
+        {% for candidate in candidates %}
+
+            <div
+                class="retro-panel"
+                style="
+                    margin-bottom: 15px;
+                    padding: 15px;
+                "
+            >
+
+                {% if candidate.photo %}
+
+                    <img
+                        src="{{ candidate.photo.url }}"
+                        alt="{{ candidate.name }}"
+                        style="
+                            width: 100px;
+                            height: 100px;
+                            object-fit: cover;
+                            border-radius: 10px;
+                        "
+                    >
+
+                {% endif %}
+
+                <h3>
+                    {{ candidate.name }}
+                </h3>
+
+                {% if candidate.party %}
+
+                    <p>
+                        <strong>Party:</strong>
+                        {{ candidate.party }}
+                    </p>
+
+                {% endif %}
+
+                {% if candidate.description %}
+
+                    <p>
+                        {{ candidate.description }}
+                    </p>
+
+                {% endif %}
+
+                <p>
+
+                    <a
+                        href="{% url 'edit_candidate' candidate.id %}"
+                    >
+                        Edit Candidate
+                    </a>
+
+                    &nbsp;
+
+                    <a
+                        href="{% url 'delete_candidate' candidate.id %}"
+                    >
+                        Delete Candidate
+                    </a>
+
+                </p>
+
+            </div>
+
+        {% empty %}
+
+            <p>
+                <strong>
+                    No candidates have been added yet.
+                </strong>
+            </p>
+
+        {% endfor %}
+
+        <p>
+
+            <a
+                href="{% url 'create_candidate' %}"
+            >
+                + Add Candidate
+            </a>
+
+        </p>
+
+        <hr>
+
+        <!-- ================================================= -->
+        <!-- ACTIONS -->
+        <!-- ================================================= -->
+
+        <button type="submit">
+            Save Election Changes
+        </button>
+
+        <a href="{% url 'manage_elections' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+
+<script>
+
+const eligibilityRadios =
+    document.querySelectorAll(
+        'input[name="eligibility_type"]'
+    );
+
+const selectedAadhaarSection =
+    document.getElementById(
+        'selectedAadhaarSection'
+    );
+
+
+function updateEligibilitySection() {
+
+    let selectedValue = null;
+
+    eligibilityRadios.forEach(
+        function(radio) {
+
+            if (radio.checked) {
+                selectedValue = radio.value;
+            }
+
+        }
+    );
+
+
+    if (selectedValue === 'SELECTED') {
+
+        selectedAadhaarSection.style.display =
+            'block';
+
+    } else {
+
+        selectedAadhaarSection.style.display =
+            'none';
+
+    }
+
+}
+
+
+eligibilityRadios.forEach(
+    function(radio) {
+
+        radio.addEventListener(
+            'change',
+            updateEligibilitySection
+        );
+
+    }
+);
+
+
+updateEligibilitySection();
+
+</script>
+
+{% endblock %}

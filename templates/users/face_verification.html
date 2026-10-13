@@ -1,0 +1,1201 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Face Verification | ProjectVote
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   FACE VERIFICATION PAGE
+========================================================= */
+
+.verification-page {
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.verification-header {
+    position: relative;
+
+    padding: 34px 40px;
+
+    margin-bottom: 25px;
+
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(32, 184, 166, 0.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 15% 80%,
+            rgba(25, 118, 210, 0.18),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #0d2942,
+            #0a2035
+        );
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.25);
+
+    overflow: hidden;
+}
+
+
+.verification-header::after {
+    content: "";
+
+    position: absolute;
+
+    right: -80px;
+    bottom: -110px;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    border: 1px solid
+        rgba(229, 185, 95, 0.12);
+
+    pointer-events: none;
+}
+
+
+.verification-label {
+    display: inline-block;
+
+    margin-bottom: 9px;
+
+    color: var(--gold-light);
+
+    font-size: 0.76rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+}
+
+
+.verification-header h1 {
+    margin: 0 0 8px;
+
+    font-size: clamp(
+        1.9rem,
+        4vw,
+        2.5rem
+    );
+}
+
+
+.verification-header h1 span {
+    color: var(--gold-light);
+}
+
+
+.verification-header p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.95rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   MAIN VERIFICATION CARD
+========================================================= */
+
+.verification-card {
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16, 43, 67, 0.98),
+            rgba(11, 32, 51, 0.98)
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 45px
+        rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================================================
+   INSTRUCTIONS
+========================================================= */
+
+.verification-instructions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 25px;
+}
+
+
+.instruction {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px 13px;
+
+    background:
+        rgba(4, 16, 28, 0.40);
+
+    border:
+        1px solid
+        rgba(130, 170, 205, 0.10);
+
+    border-radius: 10px;
+}
+
+
+.instruction-number {
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--teal)
+        );
+
+    font-size: 0.72rem;
+
+    font-weight: 700;
+}
+
+
+.instruction span:last-child {
+    color: var(--text-muted);
+
+    font-size: 0.76rem;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   CAMERA AREA
+========================================================= */
+
+.camera-section {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+
+.camera-frame {
+    position: relative;
+
+    width: min(100%, 620px);
+
+    aspect-ratio: 4 / 3;
+
+    background:
+        #061521;
+
+    border:
+        1px solid
+        rgba(80, 150, 200, 0.25);
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 18px 40px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+/* CAMERA VIDEO */
+
+#camera {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    background:
+        #061521;
+}
+
+
+/* =========================================================
+   CAMERA OVERLAY
+========================================================= */
+
+.camera-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+}
+
+
+/* Corner guides */
+
+.camera-corner {
+    position: absolute;
+
+    width: 42px;
+    height: 42px;
+
+    border-color:
+        rgba(87, 213, 194, 0.85);
+
+    border-style: solid;
+}
+
+
+.corner-tl {
+    top: 18px;
+    left: 18px;
+
+    border-width: 2px 0 0 2px;
+
+    border-radius: 8px 0 0 0;
+}
+
+
+.corner-tr {
+    top: 18px;
+    right: 18px;
+
+    border-width: 2px 2px 0 0;
+
+    border-radius: 0 8px 0 0;
+}
+
+
+.corner-bl {
+    bottom: 18px;
+    left: 18px;
+
+    border-width: 0 0 2px 2px;
+
+    border-radius: 0 0 0 8px;
+}
+
+
+.corner-br {
+    right: 18px;
+    bottom: 18px;
+
+    border-width: 0 2px 2px 0;
+
+    border-radius: 0 0 8px 0;
+}
+
+
+/* Face guide */
+
+.face-guide {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 190px;
+    height: 245px;
+
+    transform: translate(
+        -50%,
+        -50%
+    );
+
+    border:
+        2px dashed
+        rgba(255, 255, 255, 0.45);
+
+    border-radius:
+        48% 48% 45% 45% /
+        42% 42% 55% 55%;
+}
+
+
+/* =========================================================
+   CAMERA LABEL
+========================================================= */
+
+.camera-label {
+    position: absolute;
+
+    top: 18px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    padding: 6px 11px;
+
+    border-radius: 999px;
+
+    color: white;
+
+    background:
+        rgba(4, 16, 28, 0.70);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(8px);
+
+    font-size: 0.68rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.04em;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CAMERA STATUS
+========================================================= */
+
+.camera-status {
+    width: min(100%, 620px);
+
+    margin-top: 12px;
+
+    padding: 10px 13px;
+
+    text-align: center;
+
+    color: var(--text-muted);
+
+    background:
+        rgba(4, 16, 28, 0.40);
+
+    border:
+        1px solid
+        rgba(130, 170, 205, 0.10);
+
+    border-radius: 9px;
+
+    font-size: 0.78rem;
+}
+
+
+/* =========================================================
+   CAPTURE BUTTON
+========================================================= */
+
+.capture-area {
+    width: min(100%, 620px);
+
+    margin-top: 18px;
+}
+
+
+#captureButton {
+    width: 100%;
+
+    min-height: 50px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--teal)
+        );
+
+    box-shadow:
+        0 8px 22px
+        rgba(25, 118, 210, 0.22);
+
+    font-size: 0.92rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+#captureButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px
+        rgba(25, 118, 210, 0.30);
+}
+
+
+#captureButton:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   STATUS MESSAGE
+========================================================= */
+
+#status {
+    width: min(100%, 620px);
+
+    min-height: 22px;
+
+    margin: 15px auto 0;
+
+    text-align: center;
+
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SECURITY NOTE
+========================================================= */
+
+.security-note {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 25px;
+
+    padding: 15px 16px;
+
+    background:
+        rgba(229, 185, 95, 0.05);
+
+    border:
+        1px solid
+        rgba(229, 185, 95, 0.12);
+
+    border-radius: 11px;
+}
+
+
+.security-icon {
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    color: var(--gold-light);
+
+    background:
+        rgba(229, 185, 95, 0.08);
+
+    font-size: 0.85rem;
+}
+
+
+.security-note strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--text);
+
+    font-size: 0.78rem;
+}
+
+
+.security-note p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.74rem;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   HIDDEN CANVAS
+========================================================= */
+
+#canvas {
+    display: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 750px) {
+
+    .verification-instructions {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .verification-header {
+        padding: 28px 23px;
+    }
+
+
+    .verification-card {
+        padding: 20px;
+    }
+
+
+    .camera-frame {
+        border-radius: 12px;
+    }
+
+
+    .face-guide {
+        width: 145px;
+        height: 195px;
+    }
+
+
+    .camera-corner {
+        width: 32px;
+        height: 32px;
+    }
+
+
+    .camera-label {
+        top: 12px;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="verification-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="verification-header">
+
+        <span class="verification-label">
+            ProjectVote • Identity Verification
+        </span>
+
+
+        <h1>
+            Face <span>Verification</span>
+        </h1>
+
+
+        <p>
+            Verify your identity using the camera. Position
+            your face inside the guide and capture a clear
+            image to continue securely.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         VERIFICATION CARD
+    ====================================================== -->
+
+    <section class="verification-card">
+
+
+        <!-- =================================================
+             INSTRUCTIONS
+        ================================================== -->
+
+        <div class="verification-instructions">
+
+
+            <div class="instruction">
+
+                <span class="instruction-number">
+                    1
+                </span>
+
+                <span>
+                    Allow camera access when prompted.
+                </span>
+
+            </div>
+
+
+            <div class="instruction">
+
+                <span class="instruction-number">
+                    2
+                </span>
+
+                <span>
+                    Position your face inside the guide.
+                </span>
+
+            </div>
+
+
+            <div class="instruction">
+
+                <span class="instruction-number">
+                    3
+                </span>
+
+                <span>
+                    Capture a clear image to verify.
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             CAMERA
+        ================================================== -->
+
+        <div class="camera-section">
+
+
+            <div class="camera-frame">
+
+
+                <video
+                    id="camera"
+                    autoplay
+                    playsinline
+                ></video>
+
+
+                <!-- CAMERA OVERLAY -->
+
+                <div class="camera-overlay">
+
+
+                    <div class="camera-label">
+                        Position your face inside the frame
+                    </div>
+
+
+                    <div class="face-guide"></div>
+
+
+                    <div class="camera-corner corner-tl"></div>
+
+                    <div class="camera-corner corner-tr"></div>
+
+                    <div class="camera-corner corner-bl"></div>
+
+                    <div class="camera-corner corner-br"></div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- CAMERA STATUS -->
+
+            <div
+                class="camera-status"
+                id="cameraStatus"
+            >
+                Starting camera...
+            </div>
+
+
+            <!-- CAPTURE -->
+
+            <div class="capture-area">
+
+                <button
+                    type="button"
+                    id="captureButton"
+                    onclick="capturePhoto()"
+                    disabled
+                >
+                    Capture &amp; Verify
+                </button>
+
+            </div>
+
+
+            <!-- VERIFICATION STATUS -->
+
+            <p id="status"></p>
+
+
+        </div>
+
+
+        <!-- =================================================
+             SECURITY INFORMATION
+        ================================================== -->
+
+        <div class="security-note">
+
+
+            <div class="security-icon">
+                ✓
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Secure Identity Verification
+                </strong>
+
+                <p>
+                    Your camera is used to capture a live image
+                    for identity verification. Make sure your
+                    face is clearly visible and well illuminated
+                    before capturing.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         HIDDEN CANVAS
+    ====================================================== -->
+
+    <canvas
+        id="canvas"
+        width="500"
+        height="375"
+    ></canvas>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const video =
+    document.getElementById('camera');
+
+const canvas =
+    document.getElementById('canvas');
+
+const statusText =
+    document.getElementById('status');
+
+const cameraStatus =
+    document.getElementById('cameraStatus');
+
+const captureButton =
+    document.getElementById('captureButton');
+
+
+let stream = null;
+
+
+/* =========================================================
+   START CAMERA
+========================================================= */
+
+navigator.mediaDevices.getUserMedia({
+    video: {
+        facingMode: "user"
+    }
+})
+.then(function(cameraStream) {
+
+    stream = cameraStream;
+
+    video.srcObject = cameraStream;
+
+    cameraStatus.innerText =
+        'Camera ready. Position your face inside the guide.';
+
+    captureButton.disabled = false;
+
+})
+.catch(function(error) {
+
+    console.error(error);
+
+    cameraStatus.innerText =
+        'Unable to access the camera.';
+
+    statusText.innerText =
+        'Please allow camera access and try again.';
+
+    captureButton.disabled = true;
+
+});
+
+
+/* =========================================================
+   CAPTURE PHOTO
+========================================================= */
+
+function capturePhoto() {
+
+    if (!stream) {
+
+        statusText.innerText =
+            'Camera is not available.';
+
+        return;
+
+    }
+
+
+    const context =
+        canvas.getContext('2d');
+
+
+    context.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    statusText.innerText =
+        'Verifying your face...';
+
+
+    cameraStatus.innerText =
+        'Verification in progress...';
+
+
+    captureButton.disabled = true;
+
+
+    canvas.toBlob(
+        function(blob) {
+
+
+            if (!blob) {
+
+                statusText.innerText =
+                    'Unable to capture the image.';
+
+                captureButton.disabled = false;
+
+                return;
+
+            }
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                'live_photo',
+                blob,
+                'live_face.jpg'
+            );
+
+
+            fetch(
+                "{% url 'face_verification' %}",
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'X-CSRFToken':
+                            getCookie('csrftoken')
+                    },
+
+                    body: formData
+                }
+            )
+
+
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Server returned an error.'
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+
+            .then(function(data) {
+
+
+                if (data.success) {
+
+
+                    statusText.innerText =
+                        data.message ||
+                        'Face verification successful.';
+
+
+                    cameraStatus.innerText =
+                        'Verification successful.';
+
+
+                    /* Stop camera */
+
+                    if (stream) {
+
+                        stream
+                            .getTracks()
+                            .forEach(
+                                function(track) {
+                                    track.stop();
+                                }
+                            );
+
+                    }
+
+
+                    /*
+                     * Redirect after successful
+                     * verification.
+                     */
+
+                    setTimeout(
+                        function() {
+
+                            window.location.href =
+                                "{% url 'voter_dashboard' %}";
+
+                        },
+                        700
+                    );
+
+
+                } else {
+
+
+                    statusText.innerText =
+                        data.message ||
+                        'Face verification failed.';
+
+
+                    cameraStatus.innerText =
+                        'Verification unsuccessful.';
+
+                    captureButton.disabled =
+                        false;
+
+                }
+
+            })
+
+
+            .catch(function(error) {
+
+                console.error(error);
+
+
+                statusText.innerText =
+                    'An error occurred during verification. Please try again.';
+
+
+                cameraStatus.innerText =
+                    'Verification could not be completed.';
+
+
+                captureButton.disabled =
+                    false;
+
+            });
+
+
+        },
+        'image/jpeg',
+        0.90
+    );
+
+}
+
+
+/* =========================================================
+   GET CSRF COOKIE
+========================================================= */
+
+function getCookie(name) {
+
+    let cookieValue = null;
+
+
+    if (
+        document.cookie &&
+        document.cookie !== ''
+    ) {
+
+
+        const cookies =
+            document.cookie.split(';');
+
+
+        for (
+            let i = 0;
+            i < cookies.length;
+            i++
+        ) {
+
+
+            const cookie =
+                cookies[i].trim();
+
+
+            if (
+                cookie.substring(
+                    0,
+                    name.length + 1
+                ) === (name + '=')
+            ) {
+
+
+                cookieValue =
+                    decodeURIComponent(
+                        cookie.substring(
+                            name.length + 1
+                        )
+                    );
+
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    return cookieValue;
+
+}
+
+
+/* =========================================================
+   STOP CAMERA WHEN LEAVING PAGE
+========================================================= */
+
+window.addEventListener(
+    'beforeunload',
+    function() {
+
+        if (stream) {
+
+            stream
+                .getTracks()
+                .forEach(
+                    function(track) {
+                        track.stop();
+                    }
+                );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

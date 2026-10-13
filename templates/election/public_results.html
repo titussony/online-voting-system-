@@ -1,0 +1,821 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Election Results | ProjectVote
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   ELECTION RESULTS PAGE
+========================================================= */
+
+.results-page {
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.results-header {
+    position: relative;
+
+    padding: 38px 42px;
+
+    margin-bottom: 32px;
+
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(32, 184, 166, 0.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 15% 80%,
+            rgba(25, 118, 210, 0.18),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #0d2942,
+            #0a2035
+        );
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.25);
+
+    overflow: hidden;
+}
+
+
+.results-header::after {
+    content: "";
+
+    position: absolute;
+
+    right: -80px;
+    bottom: -110px;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    border: 1px solid
+        rgba(229, 185, 95, 0.12);
+}
+
+
+.results-label {
+    display: inline-block;
+
+    margin-bottom: 10px;
+
+    color: var(--gold-light);
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+}
+
+
+.results-header h1 {
+    margin: 0 0 10px;
+
+    font-size: clamp(
+        2rem,
+        4vw,
+        2.8rem
+    );
+}
+
+
+.results-header h1 span {
+    color: var(--gold-light);
+}
+
+
+.results-header p {
+    max-width: 760px;
+
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 1rem;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.results-section {
+    margin-bottom: 35px;
+}
+
+
+.section-heading {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 18px;
+}
+
+
+.section-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.section-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--teal)
+        );
+
+    box-shadow:
+        0 6px 18px
+        rgba(25, 118, 210, 0.20);
+
+    font-size: 1.1rem;
+}
+
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 1.55rem;
+}
+
+
+.section-heading p {
+    margin: 4px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.88rem;
+}
+
+
+/* =========================================================
+   RESULTS GRID
+========================================================= */
+
+.results-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 22px;
+}
+
+
+/* =========================================================
+   RESULT CARD
+========================================================= */
+
+.result-card {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 285px;
+
+    padding: 27px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #102d46,
+            #0b2136
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 12px 35px
+        rgba(0, 0, 0, 0.20);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* TOP ACCENT */
+
+.result-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--teal),
+            var(--gold)
+        );
+}
+
+
+.result-card:hover {
+    transform: translateY(-4px);
+
+    border-color:
+        rgba(49, 148, 232, 0.35);
+
+    box-shadow:
+        0 20px 45px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.result-top {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 14px;
+}
+
+
+.result-name {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 1.3rem;
+
+    line-height: 1.35;
+}
+
+
+.published-badge {
+    flex-shrink: 0;
+
+    padding: 5px 11px;
+
+    border-radius: 999px;
+
+    color: #72e2b1;
+
+    background:
+        rgba(53, 201, 139, 0.10);
+
+    border:
+        1px solid
+        rgba(53, 201, 139, 0.22);
+
+    font-size: 0.68rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.result-description {
+    margin: 0 0 22px;
+
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   RESULT INFORMATION
+========================================================= */
+
+.result-info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-top: auto;
+
+    margin-bottom: 20px;
+}
+
+
+.info-box {
+    padding: 12px 13px;
+
+    background:
+        rgba(4, 16, 28, 0.42);
+
+    border:
+        1px solid
+        rgba(130, 170, 205, 0.08);
+
+    border-radius: 9px;
+}
+
+
+.info-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #71879b;
+
+    font-size: 0.68rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+}
+
+
+.info-value {
+    color: #dbe7f1;
+
+    font-size: 0.79rem;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   RESULTS BUTTON
+========================================================= */
+
+.results-button {
+    width: 100%;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    padding: 60px 30px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16, 43, 67, 0.90),
+            rgba(11, 32, 51, 0.90)
+        );
+
+    border:
+        1px dashed
+        rgba(130, 170, 205, 0.25);
+
+    border-radius: 15px;
+}
+
+
+.empty-icon {
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 17px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(25, 118, 210, 0.10);
+
+    border:
+        1px solid
+        rgba(49, 148, 232, 0.20);
+
+    color: var(--blue-light);
+
+    font-size: 1.4rem;
+}
+
+
+.empty-state h3 {
+    margin: 0 0 7px;
+
+    font-size: 1.2rem;
+}
+
+
+.empty-state p {
+    max-width: 550px;
+
+    margin: 0 auto;
+
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   PAGE ACTIONS
+========================================================= */
+
+.results-actions {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 35px;
+
+    padding-top: 25px;
+
+    border-top:
+        1px solid
+        rgba(130, 170, 205, 0.12);
+}
+
+
+.back-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: var(--text-muted);
+
+    font-size: 0.88rem;
+
+    transition:
+        color 0.2s ease;
+}
+
+
+.back-link:hover {
+    color: var(--gold-light);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .results-header {
+        padding: 28px 23px;
+    }
+
+
+    .section-heading {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .result-top {
+        flex-direction: column;
+    }
+
+
+    .result-info {
+        grid-template-columns: 1fr;
+    }
+
+
+    .results-actions {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="results-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="results-header">
+
+        <span class="results-label">
+            ProjectVote • Public Results
+        </span>
+
+
+        <h1>
+            Election <span>Results</span>
+        </h1>
+
+
+        <p>
+            View officially published results from completed
+            elections. Results are displayed after they have
+            been published by the election administrator.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         PUBLISHED RESULTS
+    ====================================================== -->
+
+    <section class="results-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    ✓
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Published Results
+                    </h2>
+
+                    <p>
+                        Official results available for public viewing.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% if elections %}
+
+
+            <div class="results-grid">
+
+
+                {% for election in elections %}
+
+
+                    <article class="result-card">
+
+
+                        <!-- RESULT HEADER -->
+
+                        <div class="result-top">
+
+                            <h3 class="result-name">
+                                {{ election.name }}
+                            </h3>
+
+
+                            <span class="published-badge">
+                                Published
+                            </span>
+
+                        </div>
+
+
+                        <!-- DESCRIPTION -->
+
+                        {% if election.description %}
+
+                            <p class="result-description">
+                                {{ election.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="result-description">
+                                The official results for this
+                                completed election have been
+                                published.
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- RESULT INFORMATION -->
+
+                        <div class="result-info">
+
+
+                            <div class="info-box">
+
+                                <span class="info-label">
+                                    Election Ended
+                                </span>
+
+                                <span class="info-value">
+                                    {{ election.end_date|date:"d M Y, h:i A" }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-box">
+
+                                <span class="info-label">
+                                    Status
+                                </span>
+
+                                <span class="info-value">
+                                    {{ election.get_status_display }}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- VIEW RESULTS -->
+
+                        <a
+                            href="{% url 'public_result_detail' election.id %}"
+                            class="btn btn-primary results-button"
+                        >
+                            View Official Results →
+                        </a>
+
+
+                    </article>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 NO RESULTS
+            ================================================== -->
+
+            <div class="empty-state">
+
+
+                <div class="empty-icon">
+                    ◷
+                </div>
+
+
+                <h3>
+                    No Results Published Yet
+                </h3>
+
+
+                <p>
+                    There are currently no completed elections
+                    with publicly published results. Once an
+                    election administrator publishes the results,
+                    they will appear here.
+                </p>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE ACTIONS
+    ====================================================== -->
+
+    <div class="results-actions">
+
+
+        <a
+            href="{% url 'home' %}"
+            class="back-link"
+        >
+            ← Back to Home
+        </a>
+
+
+        <a
+            href="{% url 'election_information' %}"
+            class="btn btn-secondary"
+        >
+            View Elections
+        </a>
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,1459 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Election Information | ProjectVote
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   ELECTION INFORMATION PAGE
+========================================================= */
+
+.election-page {
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+    position: relative;
+
+    padding: 38px 42px;
+
+    margin-bottom: 32px;
+
+    border-radius: 18px;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(32, 184, 166, 0.16),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 15% 80%,
+            rgba(25, 118, 210, 0.18),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #0d2942,
+            #0a2035
+        );
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.25);
+
+    overflow: hidden;
+}
+
+
+.page-header::after {
+    content: "";
+
+    position: absolute;
+
+    right: -80px;
+    bottom: -110px;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    border: 1px solid
+        rgba(229, 185, 95, 0.12);
+}
+
+
+.page-label {
+    display: inline-block;
+
+    margin-bottom: 10px;
+
+    color: var(--gold-light);
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+}
+
+
+.page-header h1 {
+    margin: 0 0 10px;
+
+    font-size: clamp(
+        2rem,
+        4vw,
+        2.8rem
+    );
+}
+
+
+.page-header h1 span {
+    color: var(--gold-light);
+}
+
+
+.page-header p {
+    max-width: 760px;
+
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 1rem;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.election-section {
+    margin-bottom: 40px;
+}
+
+
+.section-header {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 18px;
+}
+
+
+.section-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.section-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--teal)
+        );
+
+    box-shadow:
+        0 6px 18px
+        rgba(25, 118, 210, 0.20);
+
+    font-size: 1.1rem;
+}
+
+
+.section-header h2 {
+    margin: 0;
+
+    font-size: 1.55rem;
+}
+
+
+.section-header p {
+    margin: 4px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.88rem;
+}
+
+
+/* =========================================================
+   ELECTION GRID
+========================================================= */
+
+.election-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 22px;
+}
+
+
+/* =========================================================
+   ELECTION CARD
+========================================================= */
+
+.election-card {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 27px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #102d46,
+            #0b2136
+        );
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 12px 35px
+        rgba(0, 0, 0, 0.20);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.election-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--teal),
+            var(--gold)
+        );
+}
+
+
+.election-card:hover {
+    transform: translateY(-4px);
+
+    border-color:
+        rgba(49, 148, 232, 0.35);
+
+    box-shadow:
+        0 20px 45px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+/* =========================================================
+   ELECTION HEADER
+========================================================= */
+
+.election-top {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 14px;
+}
+
+
+.election-name {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 1.3rem;
+
+    line-height: 1.35;
+}
+
+
+.status-badge {
+    flex-shrink: 0;
+
+    padding: 5px 11px;
+
+    border-radius: 999px;
+
+    font-size: 0.68rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+
+    text-transform: uppercase;
+}
+
+
+.ongoing-badge {
+    color: #72e2b1;
+
+    background:
+        rgba(53, 201, 139, 0.10);
+
+    border:
+        1px solid
+        rgba(53, 201, 139, 0.22);
+}
+
+
+.upcoming-badge {
+    color: var(--gold-light);
+
+    background:
+        rgba(229, 185, 95, 0.09);
+
+    border:
+        1px solid
+        rgba(229, 185, 95, 0.20);
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.election-description {
+    margin: 0 0 22px;
+
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   ELECTION DETAILS
+========================================================= */
+
+.election-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 22px;
+}
+
+
+.detail-box {
+    padding: 12px 13px;
+
+    background:
+        rgba(4, 16, 28, 0.42);
+
+    border:
+        1px solid
+        rgba(130, 170, 205, 0.08);
+
+    border-radius: 9px;
+}
+
+
+.detail-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #71879b;
+
+    font-size: 0.68rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+}
+
+
+.detail-value {
+    color: #dbe7f1;
+
+    font-size: 0.79rem;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   CANDIDATES SECTION
+========================================================= */
+
+.candidates-section {
+    margin-top: 4px;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid
+        rgba(130, 170, 205, 0.12);
+}
+
+
+.candidates-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 13px;
+}
+
+
+.candidates-heading h4 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 0.95rem;
+}
+
+
+.candidate-count {
+    color: var(--text-muted);
+
+    font-size: 0.72rem;
+}
+
+
+/* =========================================================
+   CANDIDATE LIST
+========================================================= */
+
+.candidate-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.candidate-item {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 13px;
+
+    padding: 11px;
+
+    background:
+        rgba(4, 16, 28, 0.40);
+
+    border:
+        1px solid
+        rgba(130, 170, 205, 0.08);
+
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   CANDIDATE PHOTO
+========================================================= */
+
+.candidate-photo {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    border:
+        1px solid
+        rgba(130, 170, 205, 0.16);
+
+    background:
+        #102d46;
+}
+
+
+.candidate-placeholder {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    color: var(--blue-light);
+
+    background:
+        rgba(25, 118, 210, 0.10);
+
+    border:
+        1px solid
+        rgba(49, 148, 232, 0.16);
+
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   CANDIDATE INFORMATION
+========================================================= */
+
+.candidate-info {
+    min-width: 0;
+}
+
+
+.candidate-name {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: var(--text);
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+}
+
+
+.candidate-party {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--gold-light);
+
+    font-size: 0.74rem;
+
+    font-weight: 600;
+}
+
+
+.candidate-description {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.73rem;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.view-button {
+    width: 100%;
+
+    margin-top: 20px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   UPCOMING NOTE
+========================================================= */
+
+.upcoming-note {
+    margin-top: 20px;
+
+    padding: 12px 13px;
+
+    background:
+        rgba(229, 185, 95, 0.06);
+
+    border:
+        1px solid
+        rgba(229, 185, 95, 0.12);
+
+    border-radius: 9px;
+
+    color: var(--text-muted);
+
+    font-size: 0.78rem;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    padding: 55px 30px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16, 43, 67, 0.90),
+            rgba(11, 32, 51, 0.90)
+        );
+
+    border:
+        1px dashed
+        rgba(130, 170, 205, 0.25);
+
+    border-radius: 15px;
+}
+
+
+.empty-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 16px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(25, 118, 210, 0.10);
+
+    border:
+        1px solid
+        rgba(49, 148, 232, 0.20);
+
+    color: var(--blue-light);
+
+    font-size: 1.3rem;
+}
+
+
+.empty-state h3 {
+    margin: 0 0 7px;
+
+    font-size: 1.15rem;
+}
+
+
+.empty-state p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   PAGE ACTIONS
+========================================================= */
+
+.page-actions {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 35px;
+
+    padding-top: 25px;
+
+    border-top:
+        1px solid
+        rgba(130, 170, 205, 0.12);
+}
+
+
+.back-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: var(--text-muted);
+
+    font-size: 0.88rem;
+
+    transition:
+        color 0.2s ease;
+}
+
+
+.back-link:hover {
+    color: var(--gold-light);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .election-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .page-header {
+        padding: 28px 23px;
+    }
+
+
+    .section-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .election-top {
+        flex-direction: column;
+    }
+
+
+    .election-details {
+        grid-template-columns: 1fr;
+    }
+
+
+    .page-actions {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="election-page">
+
+
+    <!-- =====================================================
+         PUBLIC PAGE HEADER
+    ====================================================== -->
+
+    <section class="page-header">
+
+        <span class="page-label">
+            ProjectVote • Public Information
+        </span>
+
+
+        <h1>
+            Election <span>Information</span>
+        </h1>
+
+
+        <p>
+            Explore current and upcoming elections, review
+            election schedules and learn about the candidates
+            participating in each election. No login is required
+            to view election information.
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         ONGOING ELECTIONS
+    ====================================================== -->
+
+    <section class="election-section">
+
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    ✓
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Ongoing Elections
+                    </h2>
+
+                    <p>
+                        Elections currently open for voting.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% if ongoing_elections %}
+
+
+            <div class="election-grid">
+
+
+                {% for election in ongoing_elections %}
+
+
+                    <article class="election-card">
+
+
+                        <!-- ELECTION HEADER -->
+
+                        <div class="election-top">
+
+                            <h3 class="election-name">
+                                {{ election.name }}
+                            </h3>
+
+
+                            <span class="status-badge ongoing-badge">
+                                Ongoing
+                            </span>
+
+                        </div>
+
+
+                        <!-- DESCRIPTION -->
+
+                        {% if election.description %}
+
+                            <p class="election-description">
+                                {{ election.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="election-description">
+                                This election is currently open
+                                for eligible voters.
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- ELECTION DETAILS -->
+
+                        <div class="election-details">
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    Start Date &amp; Time
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.start_date|date:"d M Y, h:i A" }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    End Date &amp; Time
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.end_date|date:"d M Y, h:i A" }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    Status
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.get_status_display }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    Eligibility
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.get_eligibility_type_display }}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- CANDIDATES -->
+
+                        <div class="candidates-section">
+
+
+                            <div class="candidates-heading">
+
+                                <h4>
+                                    Candidates
+                                </h4>
+
+                                <span class="candidate-count">
+
+                                    {{ election.candidates.count }}
+
+                                    candidate{{ election.candidates.count|pluralize }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="candidate-list">
+
+
+                                {% for candidate in election.candidates.all %}
+
+
+                                    <div class="candidate-item">
+
+
+                                        {% if candidate.photo %}
+
+                                            <img
+                                                src="{{ candidate.photo.url }}"
+                                                alt="{{ candidate.name }}"
+                                                class="candidate-photo"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="candidate-placeholder">
+                                                ◉
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        <div class="candidate-info">
+
+
+                                            <span class="candidate-name">
+                                                {{ candidate.name }}
+                                            </span>
+
+
+                                            {% if candidate.party %}
+
+                                                <span class="candidate-party">
+                                                    {{ candidate.party }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="candidate-party">
+                                                    Independent
+                                                </span>
+
+                                            {% endif %}
+
+
+                                            {% if candidate.description %}
+
+                                                <p class="candidate-description">
+                                                    {{ candidate.description }}
+                                                </p>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                {% empty %}
+
+
+                                    <p class="candidate-description">
+                                        Candidate information is not
+                                        currently available.
+                                    </p>
+
+
+                                {% endfor %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- VIEW ELECTION -->
+
+                        <a
+                            href="{% url 'election_detail' election.id %}"
+                            class="btn btn-primary view-button"
+                        >
+                            View Election Details →
+                        </a>
+
+
+                    </article>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ✓
+                </div>
+
+
+                <h3>
+                    No Ongoing Elections
+                </h3>
+
+
+                <p>
+                    There are currently no elections open
+                    for voting.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+    <!-- =====================================================
+         UPCOMING ELECTIONS
+    ====================================================== -->
+
+    <section class="election-section">
+
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+
+                <div class="section-icon">
+                    ◷
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Upcoming Elections
+                    </h2>
+
+                    <p>
+                        Elections scheduled to begin in the future.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% if upcoming_elections %}
+
+
+            <div class="election-grid">
+
+
+                {% for election in upcoming_elections %}
+
+
+                    <article class="election-card">
+
+
+                        <!-- ELECTION HEADER -->
+
+                        <div class="election-top">
+
+                            <h3 class="election-name">
+                                {{ election.name }}
+                            </h3>
+
+
+                            <span class="status-badge upcoming-badge">
+                                Upcoming
+                            </span>
+
+                        </div>
+
+
+                        <!-- DESCRIPTION -->
+
+                        {% if election.description %}
+
+                            <p class="election-description">
+                                {{ election.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="election-description">
+                                This election has been scheduled
+                                and will open for voting at the
+                                announced start time.
+                            </p>
+
+                        {% endif %}
+
+
+                        <!-- ELECTION DETAILS -->
+
+                        <div class="election-details">
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    Start Date &amp; Time
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.start_date|date:"d M Y, h:i A" }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    End Date &amp; Time
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.end_date|date:"d M Y, h:i A" }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    Status
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.get_status_display }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="detail-box">
+
+                                <span class="detail-label">
+                                    Eligibility
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ election.get_eligibility_type_display }}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- CANDIDATES -->
+
+                        <div class="candidates-section">
+
+
+                            <div class="candidates-heading">
+
+                                <h4>
+                                    Candidates
+                                </h4>
+
+
+                                <span class="candidate-count">
+
+                                    {{ election.candidates.count }}
+
+                                    candidate{{ election.candidates.count|pluralize }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="candidate-list">
+
+
+                                {% for candidate in election.candidates.all %}
+
+
+                                    <div class="candidate-item">
+
+
+                                        {% if candidate.photo %}
+
+                                            <img
+                                                src="{{ candidate.photo.url }}"
+                                                alt="{{ candidate.name }}"
+                                                class="candidate-photo"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="candidate-placeholder">
+                                                ◉
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        <div class="candidate-info">
+
+
+                                            <span class="candidate-name">
+                                                {{ candidate.name }}
+                                            </span>
+
+
+                                            {% if candidate.party %}
+
+                                                <span class="candidate-party">
+                                                    {{ candidate.party }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="candidate-party">
+                                                    Independent
+                                                </span>
+
+                                            {% endif %}
+
+
+                                            {% if candidate.description %}
+
+                                                <p class="candidate-description">
+                                                    {{ candidate.description }}
+                                                </p>
+
+                                            {% endif %}
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                {% empty %}
+
+
+                                    <p class="candidate-description">
+                                        Candidate information is not
+                                        currently available.
+                                    </p>
+
+
+                                {% endfor %}
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- UPCOMING MESSAGE -->
+
+                        <div class="upcoming-note">
+
+                            Voting will become available when
+                            this election officially begins.
+                            You can view all election information
+                            without logging in.
+
+                        </div>
+
+
+                    </article>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ◷
+                </div>
+
+
+                <h3>
+                    No Upcoming Elections
+                </h3>
+
+
+                <p>
+                    There are currently no elections
+                    scheduled to begin.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+    <!-- =====================================================
+         PAGE ACTIONS
+    ====================================================== -->
+
+    <div class="page-actions">
+
+
+        <a
+            href="{% url 'home' %}"
+            class="back-link"
+        >
+            ← Back to Home
+        </a>
+
+
+        {% if user.is_authenticated %}
+
+
+            <a
+                href="{% url 'voter_dashboard' %}"
+                class="btn btn-secondary"
+            >
+                Go to Dashboard
+            </a>
+
+
+        {% else %}
+
+
+            <a
+                href="{% url 'voter_login' %}"
+                class="btn btn-secondary"
+            >
+                Login to Vote
+            </a>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

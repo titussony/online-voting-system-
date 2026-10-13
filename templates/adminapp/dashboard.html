@@ -1,0 +1,931 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Admin Dashboard | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .admin-dashboard {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 25px 0 50px;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .admin-header h1 {
+        margin: 0;
+        font-size: 34px;
+        letter-spacing: -0.5px;
+    }
+
+    .admin-header p {
+        margin: 8px 0 0;
+        opacity: 0.75;
+    }
+
+    .admin-status {
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+       OVERVIEW CARDS
+    ===================================================== */
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 35px;
+    }
+
+    .stat-card {
+        padding: 22px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        transition:
+            transform 0.2s ease,
+            background 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.13);
+    }
+
+    .stat-label {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.65;
+        margin-bottom: 12px;
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stat-description {
+        font-size: 13px;
+        margin-top: 7px;
+        opacity: 0.65;
+    }
+
+
+    /* =====================================================
+       MAIN GRID
+    ===================================================== */
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 22px;
+        align-items: start;
+    }
+
+    .admin-panel {
+        padding: 25px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
+    }
+
+    .panel-header {
+        margin-bottom: 20px;
+    }
+
+    .panel-header h2 {
+        margin: 0;
+        font-size: 21px;
+    }
+
+    .panel-header p {
+        margin: 7px 0 0;
+        font-size: 13px;
+        opacity: 0.65;
+    }
+
+
+    /* =====================================================
+       MANAGEMENT CARDS
+    ===================================================== */
+
+    .management-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .management-card {
+        display: block;
+        padding: 20px;
+        border-radius: 15px;
+        text-decoration: none !important;
+        color: inherit !important;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        transition: all 0.2s ease;
+    }
+
+    .management-card:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.13);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .management-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.11);
+        margin-bottom: 14px;
+        font-size: 20px;
+    }
+
+    .management-card h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+    }
+
+    .management-card p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        opacity: 0.65;
+    }
+
+
+    /* =====================================================
+       ELECTION HISTORY CARD
+    ===================================================== */
+
+    .history-card {
+        background:
+            linear-gradient(
+                135deg,
+                rgba(37, 99, 235, 0.16),
+                rgba(85, 214, 194, 0.08)
+            );
+
+        border-color: rgba(85, 214, 194, 0.20);
+    }
+
+    .history-card:hover {
+        border-color: rgba(85, 214, 194, 0.40);
+    }
+
+
+    /* =====================================================
+       QUICK ACTIONS
+    ===================================================== */
+
+    .quick-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+    }
+
+    .quick-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        text-decoration: none !important;
+        color: inherit !important;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        transition: all 0.2s ease;
+    }
+
+    .quick-action:hover {
+        background: rgba(255, 255, 255, 0.13);
+        transform: translateX(3px);
+    }
+
+    .quick-action span:first-child {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .arrow {
+        opacity: 0.5;
+        font-size: 18px;
+    }
+
+
+    /* =====================================================
+       HISTORY QUICK ACTION
+    ===================================================== */
+
+    .history-action {
+        background:
+            rgba(37, 99, 235, 0.12);
+
+        border-color:
+            rgba(85, 214, 194, 0.18);
+    }
+
+    .history-action:hover {
+        background:
+            rgba(37, 99, 235, 0.20);
+
+        border-color:
+            rgba(85, 214, 194, 0.35);
+    }
+
+
+    /* =====================================================
+       SYSTEM INFORMATION
+    ===================================================== */
+
+    .system-info {
+        margin-top: 22px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 13px;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        opacity: 0.6;
+    }
+
+    .info-value {
+        font-weight: 600;
+        text-align: right;
+    }
+
+
+    /* =====================================================
+       BOTTOM SECTION
+    ===================================================== */
+
+    .dashboard-footer-panel {
+        margin-top: 22px;
+        padding: 22px 25px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .dashboard-footer-panel h2 {
+        margin: 0 0 8px;
+        font-size: 19px;
+    }
+
+    .dashboard-footer-panel p {
+        margin: 0;
+        line-height: 1.6;
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 950px) {
+
+        .dashboard-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+    @media (max-width: 650px) {
+
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .dashboard-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .management-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-dashboard {
+            padding: 15px 0 35px;
+        }
+
+        .admin-header h1 {
+            font-size: 28px;
+        }
+
+    }
+
+</style>
+
+
+<div class="admin-dashboard">
+
+
+    <!-- =================================================
+         DASHBOARD HEADER
+    ================================================== -->
+
+    <div class="admin-header">
+
+        <div>
+
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <p>
+                Welcome back,
+                <strong>{{ request.user.username }}</strong>.
+                Manage elections, voters, candidates and
+                results from one place.
+            </p>
+
+        </div>
+
+
+        <div class="admin-status">
+            ● Administrator Access
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SYSTEM STATISTICS
+    ================================================== -->
+
+    <div class="dashboard-stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Registered Voters
+            </div>
+
+            <p class="stat-number">
+                {{ total_voters }}
+            </p>
+
+            <div class="stat-description">
+                Accounts registered in the system
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total Elections
+            </div>
+
+            <p class="stat-number">
+                {{ total_elections }}
+            </p>
+
+            <div class="stat-description">
+                Elections created in ProjectVote
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total Candidates
+            </div>
+
+            <p class="stat-number">
+                {{ total_candidates }}
+            </p>
+
+            <div class="stat-description">
+                Candidates registered across elections
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total Votes
+            </div>
+
+            <p class="stat-number">
+                {{ total_votes }}
+            </p>
+
+            <div class="stat-description">
+                Votes recorded by the system
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         MAIN DASHBOARD
+    ================================================== -->
+
+    <div class="admin-grid">
+
+
+        <!-- =============================================
+             LEFT SIDE
+        ============================================== -->
+
+        <div class="admin-panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    Election Management
+                </h2>
+
+                <p>
+                    Create, configure and manage the
+                    complete election lifecycle.
+                </p>
+
+            </div>
+
+
+            <div class="management-grid">
+
+
+                <!-- MANAGE ELECTIONS -->
+
+                <a
+                    href="{% url 'manage_elections' %}"
+                    class="management-card"
+                >
+
+                    <div class="management-icon">
+                        ◈
+                    </div>
+
+                    <h3>
+                        Manage Elections
+                    </h3>
+
+                    <p>
+                        View active elections, edit election
+                        details, manage eligibility and
+                        control election status.
+                    </p>
+
+                </a>
+
+
+
+                <!-- CREATE ELECTION -->
+
+                <a
+                    href="{% url 'create_election' %}"
+                    class="management-card"
+                >
+
+                    <div class="management-icon">
+                        +
+                    </div>
+
+                    <h3>
+                        Create Election
+                    </h3>
+
+                    <p>
+                        Create a new election and configure
+                        its dates and voter eligibility mode.
+                    </p>
+
+                </a>
+
+
+
+                <!-- MANAGE CANDIDATES -->
+
+                <a
+                    href="{% url 'manage_candidates' %}"
+                    class="management-card"
+                >
+
+                    <div class="management-icon">
+                        ◆
+                    </div>
+
+                    <h3>
+                        Manage Candidates
+                    </h3>
+
+                    <p>
+                        Add, edit and remove candidates
+                        associated with elections.
+                    </p>
+
+                </a>
+
+
+
+                <!-- ELECTION RESULTS -->
+
+                <a
+                    href="{% url 'view_results' %}"
+                    class="management-card"
+                >
+
+                    <div class="management-icon">
+                        ◉
+                    </div>
+
+                    <h3>
+                        Election Results
+                    </h3>
+
+                    <p>
+                        View vote counts and manage
+                        election result publication.
+                    </p>
+
+                </a>
+
+
+
+                <!-- =====================================
+                     ELECTION HISTORY
+                ====================================== -->
+
+                <a
+                    href="{% url 'election_history' %}"
+                    class="management-card history-card"
+                >
+
+                    <div class="management-icon">
+                        ◷
+                    </div>
+
+                    <h3>
+                        Election History
+                    </h3>
+
+                    <p>
+                        View closed elections and preserve
+                        their candidates, votes, eligibility
+                        records and published results.
+                    </p>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =============================================
+             RIGHT SIDE
+        ============================================== -->
+
+        <div>
+
+
+            <!-- =========================================
+                 QUICK ACTIONS
+            ========================================== -->
+
+            <div class="admin-panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Quick Actions
+                    </h2>
+
+                    <p>
+                        Frequently used administrator controls.
+                    </p>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+
+                    <!-- CREATE -->
+
+                    <a
+                        href="{% url 'create_election' %}"
+                        class="quick-action"
+                    >
+
+                        <span>
+                            Create New Election
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- MANAGE -->
+
+                    <a
+                        href="{% url 'manage_elections' %}"
+                        class="quick-action"
+                    >
+
+                        <span>
+                            Manage Elections
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- HISTORY -->
+
+                    <a
+                        href="{% url 'election_history' %}"
+                        class="quick-action history-action"
+                    >
+
+                        <span>
+                            Election History
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- CANDIDATES -->
+
+                    <a
+                        href="{% url 'manage_candidates' %}"
+                        class="quick-action"
+                    >
+
+                        <span>
+                            Manage Candidates
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+
+                    <!-- RESULTS -->
+
+                    <a
+                        href="{% url 'view_results' %}"
+                        class="quick-action"
+                    >
+
+                        <span>
+                            View Results
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =========================================
+                 SYSTEM INFORMATION
+            ========================================== -->
+
+            <div class="admin-panel system-info">
+
+                <div class="panel-header">
+
+                    <h2>
+                        System Information
+                    </h2>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Platform
+                    </span>
+
+                    <span class="info-value">
+                        ProjectVote
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Application
+                    </span>
+
+                    <span class="info-value">
+                        Online Voting System
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Access Level
+                    </span>
+
+                    <span class="info-value">
+                        Administrator
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Voting Verification
+                    </span>
+
+                    <span class="info-value">
+                        Multi-Step
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         VOTER MANAGEMENT
+    ================================================== -->
+
+    <div class="dashboard-footer-panel">
+
+        <h2>
+            Voter Management
+        </h2>
+
+        <p>
+            Registered voter information is maintained within
+            the ProjectVote system. Election eligibility is
+            managed separately for each election, allowing
+            administrators to select the appropriate voters
+            without removing existing user accounts.
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         ELECTION ARCHIVE INFORMATION
+    ================================================== -->
+
+    <div class="dashboard-footer-panel">
+
+        <h2>
+            Election Archive
+        </h2>
+
+        <p>
+            Closed elections are removed from the active
+            Manage Elections section and preserved in
+            Election History. Their election details,
+            candidates, recorded votes, eligibility records
+            and published results remain available for
+            historical reference.
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         ADMINISTRATION OVERVIEW
+    ================================================== -->
+
+    <div class="dashboard-footer-panel">
+
+        <h2>
+            Administration Overview
+        </h2>
+
+        <p>
+            ProjectVote provides a centralized administration
+            workflow for preparing elections, managing
+            candidates, configuring voter eligibility,
+            controlling election status and reviewing results.
+            Use the management sections above to perform
+            administrative operations.
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         ACCOUNT
+    ================================================== -->
+
+    <div style="
+        margin-top: 25px;
+        text-align: right;
+    ">
+
+        <a href="{% url 'admin_logout' %}">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

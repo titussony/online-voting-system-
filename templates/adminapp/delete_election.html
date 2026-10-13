@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Delete Election | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Delete Election</h1>
+
+    <p>
+        Are you sure you want to delete:
+    </p>
+
+    <h2>{{ election.name }}</h2>
+
+    <p>
+        This action cannot be undone.
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, Delete Election
+        </button>
+
+        <a href="{% url 'manage_elections' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

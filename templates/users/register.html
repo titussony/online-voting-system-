@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+
+{% block title %}Voter Registration{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Voter Registration</h1>
+
+    <form method="POST" id="registrationForm">
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <!-- USERNAME -->
+
+        <p>
+            {{ form.username.label_tag }}
+            {{ form.username }}
+
+            {{ form.username.errors }}
+        </p>
+
+
+        <!-- EMAIL -->
+
+        <p>
+            {{ form.email.label_tag }}
+            {{ form.email }}
+
+            {{ form.email.errors }}
+        </p>
+
+
+        <!-- PASSWORD -->
+
+        <p>
+            {{ form.password.label_tag }}
+            {{ form.password }}
+
+            {{ form.password.errors }}
+        </p>
+
+
+        <!-- CONFIRM PASSWORD -->
+
+        <p>
+            {{ form.confirm_password.label_tag }}
+            {{ form.confirm_password }}
+
+            {{ form.confirm_password.errors }}
+        </p>
+
+
+        <!-- FULL NAME -->
+
+        <p>
+            {{ form.full_name.label_tag }}
+            {{ form.full_name }}
+
+            {{ form.full_name.errors }}
+        </p>
+
+
+        <!-- PHONE -->
+
+        <p>
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+
+            {{ form.phone.errors }}
+        </p>
+
+
+        <!-- AADHAAR NUMBER -->
+
+        <p>
+            <label for="id_aadhaar_number">
+                Aadhaar Number
+            </label>
+
+            <input
+                type="text"
+                name="aadhaar_number"
+                id="id_aadhaar_number"
+                maxlength="5"
+                minlength="5"
+                pattern="[0-9]{5}"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Enter 5-digit Aadhaar number"
+                required
+            >
+
+            <small>
+                Enter exactly 5 digits.
+            </small>
+
+            {{ form.aadhaar_number.errors }}
+        </p>
+
+
+        <!-- VOTER ID -->
+
+        <p>
+            {{ form.voter_id.label_tag }}
+            {{ form.voter_id }}
+
+            {{ form.voter_id.errors }}
+        </p>
+
+
+        <!-- DATE OF BIRTH -->
+
+        <p>
+            {{ form.date_of_birth.label_tag }}
+            {{ form.date_of_birth }}
+
+            {{ form.date_of_birth.errors }}
+        </p>
+
+
+        <!-- ADDRESS -->
+
+        <p>
+            {{ form.address.label_tag }}
+            {{ form.address }}
+
+            {{ form.address.errors }}
+        </p>
+
+
+        <!-- ================================= -->
+        <!-- PHOTO CAPTURE SECTION -->
+        <!-- ================================= -->
+
+        <h3>Identity Photo</h3>
+
+        <p>
+            After completing all the details above,
+            click the button below to capture your photo.
+        </p>
+
+
+        <!-- CAMERA -->
+
+        <div
+            id="cameraSection"
+            style="display:none;"
+        >
+
+            <h4>Camera</h4>
+
+            <video
+                id="camera"
+                width="500"
+                height="375"
+                autoplay
+                playsinline
+            ></video>
+
+            <br><br>
+
+            <button
+                type="button"
+                id="takePhotoButton"
+            >
+                Take Photo
+            </button>
+
+            <button
+                type="button"
+                id="closeCameraButton"
+            >
+                Close Camera
+            </button>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- CAPTURE BUTTON -->
+        <!-- ================================= -->
+
+        <button
+            type="button"
+            id="openCameraButton"
+        >
+            Capture Photo
+        </button>
+
+
+        <!-- ================================= -->
+        <!-- PHOTO PREVIEW -->
+        <!-- ================================= -->
+
+        <div
+            id="previewContainer"
+            style="display:none;"
+        >
+
+            <h4>Captured Photo</h4>
+
+            <img
+                id="photoPreview"
+                width="500"
+                height="375"
+                alt="Captured photo preview"
+            >
+
+            <br><br>
+
+            <button
+                type="button"
+                id="retakeButton"
+            >
+                Retake Photo
+            </button>
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- HIDDEN CAPTURED IMAGE -->
+        <!-- ================================= -->
+
+        <input
+            type="hidden"
+            name="captured_photo"
+            id="capturedPhoto"
+        >
+
+
+        <br><br>
+
+
+        <!-- ================================= -->
+        <!-- REGISTER BUTTON -->
+        <!-- ================================= -->
+
+        <button
+            type="submit"
+            id="registerButton"
+            disabled
+        >
+            Register
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+const closeCameraButton =
+    document.getElementById('closeCameraButton');
+
+const openCameraButton =
+    document.getElementById('openCameraButton');
+
+const cameraSection =
+    document.getElementById('cameraSection');
+
+const camera =
+    document.getElementById('camera');
+
+const takePhotoButton =
+    document.getElementById('takePhotoButton');
+
+const previewContainer =
+    document.getElementById('previewContainer');
+
+const photoPreview =
+    document.getElementById('photoPreview');
+
+const retakeButton =
+    document.getElementById('retakeButton');
+
+const capturedPhoto =
+    document.getElementById('capturedPhoto');
+
+const registerButton =
+    document.getElementById('registerButton');
+
+const aadhaarInput =
+    document.getElementById('id_aadhaar_number');
+
+
+let cameraStream = null;
+
+
+// ==========================================
+// AADHAAR INPUT
+// ==========================================
+
+aadhaarInput.addEventListener(
+    'input',
+    function() {
+
+        // Allow only numbers
+        this.value = this.value.replace(
+            /[^0-9]/g,
+            ''
+        );
+
+        // Maximum 5 digits
+        if (this.value.length > 5) {
+
+            this.value =
+                this.value.substring(0, 5);
+
+        }
+
+    }
+);
+
+
+// ==========================================
+// CLOSE CAMERA
+// ==========================================
+
+closeCameraButton.addEventListener(
+    'click',
+    function() {
+
+        stopCamera();
+
+        cameraSection.style.display =
+            'none';
+
+        openCameraButton.style.display =
+            'inline-block';
+
+    }
+);
+
+
+// ==========================================
+// OPEN CAMERA
+// ==========================================
+
+openCameraButton.addEventListener(
+    'click',
+    function() {
+
+        cameraSection.style.display =
+            'block';
+
+        openCameraButton.style.display =
+            'none';
+
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: 'user'
+            }
+        })
+
+        .then(function(stream) {
+
+            cameraStream = stream;
+
+            camera.srcObject = stream;
+
+        })
+
+        .catch(function(error) {
+
+            alert(
+                'Unable to access camera: ' +
+                error.message
+            );
+
+            cameraSection.style.display =
+                'none';
+
+            openCameraButton.style.display =
+                'inline-block';
+
+        });
+
+    }
+);
+
+
+// ==========================================
+// TAKE PHOTO
+// ==========================================
+
+takePhotoButton.addEventListener(
+    'click',
+    function() {
+
+        const canvas =
+            document.createElement('canvas');
+
+        canvas.width =
+            camera.videoWidth;
+
+        canvas.height =
+            camera.videoHeight;
+
+
+        const context =
+            canvas.getContext('2d');
+
+
+        context.drawImage(
+            camera,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        const imageData =
+            canvas.toDataURL(
+                'image/jpeg',
+                0.85
+            );
+
+
+        // Store captured image
+
+        capturedPhoto.value =
+            imageData;
+
+
+        // Show preview
+
+        photoPreview.src =
+            imageData;
+
+        previewContainer.style.display =
+            'block';
+
+
+        // Hide camera
+
+        cameraSection.style.display =
+            'none';
+
+
+        // Enable registration
+
+        registerButton.disabled =
+            false;
+
+
+        // Show capture button again
+
+        openCameraButton.style.display =
+            'inline-block';
+
+
+        // Stop camera
+
+        stopCamera();
+
+    }
+);
+
+
+// ==========================================
+// RETAKE PHOTO
+// ==========================================
+
+retakeButton.addEventListener(
+    'click',
+    function() {
+
+        capturedPhoto.value = '';
+
+        photoPreview.src = '';
+
+        previewContainer.style.display =
+            'none';
+
+        registerButton.disabled =
+            true;
+
+
+        // Automatically open camera
+
+        openCameraButton.click();
+
+    }
+);
+
+
+// ==========================================
+// STOP CAMERA
+// ==========================================
+
+function stopCamera() {
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(function(track) {
+
+                track.stop();
+
+            });
+
+        cameraStream = null;
+
+        camera.srcObject = null;
+
+    }
+
+}
+
+
+// ==========================================
+// STOP CAMERA WHEN LEAVING PAGE
+// ==========================================
+
+window.addEventListener(
+    'beforeunload',
+    function() {
+
+        stopCamera();
+
+    }
+);
+
+</script>
+
+{% endblock %}

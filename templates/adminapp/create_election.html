@@ -1,0 +1,974 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Create Election | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .election-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 25px 0 55px;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .election-header {
+        margin-bottom: 26px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        margin-bottom: 18px;
+        text-decoration: none !important;
+        opacity: 0.72;
+    }
+
+    .back-link:hover {
+        opacity: 1;
+    }
+
+    .election-header h1 {
+        margin: 0;
+        font-size: 32px;
+    }
+
+    .election-header p {
+        margin: 8px 0 0;
+        max-width: 750px;
+        line-height: 1.6;
+        opacity: 0.65;
+    }
+
+    /* =========================
+       MAIN GRID
+    ========================= */
+
+    .election-layout {
+        display: grid;
+        grid-template-columns: 1.65fr 1fr;
+        gap: 22px;
+        align-items: start;
+    }
+
+    /* =========================
+       FORM PANEL
+    ========================= */
+
+    .election-form-panel {
+        padding: 28px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
+    }
+
+    .panel-heading {
+        margin-bottom: 25px;
+    }
+
+    .panel-heading h2 {
+        margin: 0;
+        font-size: 21px;
+    }
+
+    .panel-heading p {
+        margin: 7px 0 0;
+        font-size: 13px;
+        line-height: 1.5;
+        opacity: 0.62;
+    }
+
+    /* =========================
+       FORM FIELDS
+    ========================= */
+
+    .form-group {
+        margin-bottom: 21px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.9;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border-radius: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(0, 0, 0, 0.16);
+        color: inherit;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .form-group textarea {
+        min-height: 130px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+
+    .form-group input[type="datetime-local"] {
+        color-scheme: dark;
+    }
+
+    .form-help {
+        margin-top: 7px;
+        font-size: 12px;
+        line-height: 1.5;
+        opacity: 0.52;
+    }
+
+    .error-list {
+        margin-top: 7px;
+        color: #ffb4b4;
+        font-size: 12px;
+    }
+
+    .error-list ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    /* =========================
+       ELIGIBILITY
+    ========================= */
+
+    .eligibility-panel {
+        margin-top: 28px;
+        padding: 22px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.055);
+        border: 1px solid rgba(255, 255, 255, 0.11);
+    }
+
+    .eligibility-header {
+        margin-bottom: 20px;
+    }
+
+    .eligibility-header h2 {
+        margin: 0;
+        font-size: 20px;
+    }
+
+    .eligibility-header p {
+        margin: 7px 0 0;
+        font-size: 13px;
+        line-height: 1.5;
+        opacity: 0.62;
+    }
+
+    /* Radio options */
+
+    .eligibility-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 13px;
+        margin-bottom: 20px;
+    }
+
+    .eligibility-option {
+        position: relative;
+    }
+
+    .eligibility-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .eligibility-option label {
+        display: block;
+        padding: 17px;
+        border-radius: 13px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        transition: all 0.2s ease;
+    }
+
+    .eligibility-option label:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .eligibility-option input:checked + label {
+        background: rgba(255, 255, 255, 0.13);
+        border-color: rgba(255, 255, 255, 0.32);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
+    }
+
+    .option-title {
+        display: block;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .option-description {
+        display: block;
+        font-size: 12px;
+        line-height: 1.5;
+        opacity: 0.58;
+    }
+
+    /* =========================
+       SELECTED VOTERS
+    ========================= */
+
+    #selectedAadhaarSection {
+        margin-top: 20px;
+        padding-top: 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .selected-header h3 {
+        margin: 0;
+        font-size: 17px;
+    }
+
+    .selected-header p {
+        margin: 6px 0 18px;
+        font-size: 13px;
+        opacity: 0.62;
+        line-height: 1.5;
+    }
+
+    .aadhaar-textarea {
+        width: 100%;
+        min-height: 145px;
+        box-sizing: border-box;
+        padding: 13px 14px;
+        resize: vertical;
+        border-radius: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(0, 0, 0, 0.16);
+        color: inherit;
+        font-family: Consolas, monospace;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .aadhaar-textarea:focus {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* CSV */
+
+    .csv-section {
+        margin-top: 22px;
+        padding: 18px;
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .csv-section h3 {
+        margin: 0 0 7px;
+        font-size: 15px;
+    }
+
+    .csv-section p {
+        margin: 0 0 13px;
+        font-size: 12px;
+        opacity: 0.6;
+        line-height: 1.5;
+    }
+
+    .csv-section input[type="file"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px dashed rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.12);
+        color: inherit;
+        font-size: 12px;
+    }
+
+    .csv-example {
+        margin-top: 15px;
+    }
+
+    .csv-example-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        opacity: 0.5;
+        margin-bottom: 7px;
+    }
+
+    .csv-example pre {
+        margin: 0;
+        padding: 13px;
+        overflow-x: auto;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .primary-button {
+        padding: 12px 21px;
+        border: none;
+        border-radius: 11px;
+        cursor: pointer;
+        color: inherit;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+
+    .primary-button:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.23);
+    }
+
+    .secondary-button {
+        padding: 11px 18px;
+        border-radius: 11px;
+        text-decoration: none !important;
+        color: inherit !important;
+        background: rgba(255, 255, 255, 0.055);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .secondary-button:hover {
+        background: rgba(255, 255, 255, 0.11);
+    }
+
+    /* =========================
+       INFORMATION PANEL
+    ========================= */
+
+    .info-panel {
+        padding: 25px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .info-panel h2 {
+        margin: 0 0 9px;
+        font-size: 20px;
+    }
+
+    .info-panel > p {
+        margin: 0 0 20px;
+        font-size: 13px;
+        line-height: 1.6;
+        opacity: 0.62;
+    }
+
+    .info-item {
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-item strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .info-item span {
+        display: block;
+        font-size: 12px;
+        line-height: 1.55;
+        opacity: 0.58;
+    }
+
+    .draft-badge {
+        display: inline-block;
+        margin-top: 18px;
+        padding: 6px 11px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 900px) {
+        .election-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 650px) {
+        .election-page {
+            padding: 15px 0 35px;
+        }
+
+        .election-header h1 {
+            font-size: 27px;
+        }
+
+        .election-form-panel,
+        .info-panel {
+            padding: 20px;
+        }
+
+        .eligibility-options {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .primary-button,
+        .secondary-button {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    }
+</style>
+
+
+<div class="election-page">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+    <div class="election-header">
+
+        <a href="{% url 'manage_elections' %}"
+           class="back-link">
+            ← Back to Election Management
+        </a>
+
+        <h1>Create Election</h1>
+
+        <p>
+            Set up a new election, define its voting period and
+            choose how voter eligibility will be determined.
+        </p>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- MAIN LAYOUT -->
+    <!-- ========================= -->
+
+    <div class="election-layout">
+
+
+        <!-- ========================= -->
+        <!-- FORM -->
+        <!-- ========================= -->
+
+        <div class="election-form-panel">
+
+            <div class="panel-heading">
+
+                <h2>Election Configuration</h2>
+
+                <p>
+                    Provide the basic election details before configuring
+                    the voters who will be allowed to participate.
+                </p>
+
+            </div>
+
+
+            <form method="POST"
+                  enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                {{ form.non_field_errors }}
+
+
+                <!-- Election Name -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.name.id_for_label }}">
+                        Election Name
+                    </label>
+
+                    {{ form.name }}
+
+                    {% if form.name.errors %}
+                        <div class="error-list">
+                            {{ form.name.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-help">
+                        Enter a clear name that voters will recognize.
+                    </div>
+
+                </div>
+
+
+                <!-- Description -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.description.id_for_label }}">
+                        Election Description
+                    </label>
+
+                    {{ form.description }}
+
+                    {% if form.description.errors %}
+                        <div class="error-list">
+                            {{ form.description.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-help">
+                        Describe the purpose or scope of this election.
+                    </div>
+
+                </div>
+
+
+                <!-- Start Date -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.start_date.id_for_label }}">
+                        Start Date & Time
+                    </label>
+
+                    {{ form.start_date }}
+
+                    {% if form.start_date.errors %}
+                        <div class="error-list">
+                            {{ form.start_date.errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-help">
+                        Voting will be available according to the
+                        configured election period.
+                    </div>
+
+                </div>
+
+
+                <!-- End Date -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.end_date.id_for_label }}">
+                        End Date & Time
+                    </label>
+
+                    {{ form.end_date }}
+
+                    {% if form.end_date.errors %}
+                        <div class="error-list">
+                            {{ form.end_date.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- ELIGIBILITY -->
+                <!-- ========================= -->
+
+                <div class="eligibility-panel">
+
+                    <div class="eligibility-header">
+
+                        <h2>Voter Eligibility</h2>
+
+                        <p>
+                            Choose which voters are allowed to participate
+                            in this particular election.
+                        </p>
+
+                    </div>
+
+
+                    <div class="eligibility-options">
+
+                        {% for radio in form.eligibility_type %}
+
+                            <div class="eligibility-option">
+
+                                {{ radio.tag }}
+
+                                <label for="{{ radio.id_for_label }}">
+
+                                    {% if radio.choice_value == 'EVERYONE' %}
+
+                                        <span class="option-title">
+                                            Everyone
+                                        </span>
+
+                                        <span class="option-description">
+                                            All registered and properly
+                                            verified voters can participate,
+                                            subject to the normal voting
+                                            checks.
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="option-title">
+                                            Selected Voters
+                                        </span>
+
+                                        <span class="option-description">
+                                            Only voters whose identity
+                                            numbers are included in this
+                                            election's eligibility list
+                                            can vote.
+                                        </span>
+
+                                    {% endif %}
+
+                                </label>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% if form.eligibility_type.errors %}
+                        <div class="error-list">
+                            {{ form.eligibility_type.errors }}
+                        </div>
+                    {% endif %}
+
+
+                    <!-- ========================= -->
+                    <!-- SELECTED VOTERS -->
+                    <!-- ========================= -->
+
+                    <div id="selectedAadhaarSection">
+
+                        <div class="selected-header">
+
+                            <h3>
+                                Eligible Aadhaar Numbers
+                            </h3>
+
+                            <p>
+                                Enter the five-digit Aadhaar identifiers
+                                of voters who should be eligible for this
+                                election.
+                            </p>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            {{ form.eligible_voter_ids }}
+
+                            {% if form.eligible_voter_ids.errors %}
+                                <div class="error-list">
+                                    {{ form.eligible_voter_ids.errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="form-help">
+                                Enter one value per line or separate
+                                multiple values using commas.
+                                Each value must contain exactly 5 digits.
+                            </div>
+
+                        </div>
+
+
+                        <!-- CSV -->
+
+                        <div class="csv-section">
+
+                            <h3>
+                                Import Eligibility List
+                            </h3>
+
+                            <p>
+                                Instead of entering the values manually,
+                                you can upload a CSV file containing the
+                                election's eligible Aadhaar identifiers.
+                            </p>
+
+                            {{ form.eligible_voters_file }}
+
+                            {% if form.eligible_voters_file.errors %}
+                                <div class="error-list">
+                                    {{ form.eligible_voters_file.errors }}
+                                </div>
+                            {% endif %}
+
+
+                            <div class="csv-example">
+
+                                <div class="csv-example-title">
+                                    Required CSV Format
+                                </div>
+
+                                <pre>aadhaar_number
+12345
+12346
+12347
+12350</pre>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- ACTIONS -->
+                <!-- ========================= -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Create Election
+                    </button>
+
+                    <a
+                        href="{% url 'manage_elections' %}"
+                        class="secondary-button"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- INFORMATION PANEL -->
+        <!-- ========================= -->
+
+        <div class="info-panel">
+
+            <h2>Election Setup</h2>
+
+            <p>
+                Configure the election before adding candidates
+                and opening voting.
+            </p>
+
+
+            <div class="info-item">
+
+                <strong>1. Election Details</strong>
+
+                <span>
+                    Define the election name, description and
+                    voting period.
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>2. Choose Eligibility</strong>
+
+                <span>
+                    Select Everyone if the election does not require
+                    a separate voter list, or Selected Voters if
+                    participation must be restricted.
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>3. Add Eligible Voters</strong>
+
+                <span>
+                    Selected elections can use manual five-digit
+                    identity entry or a CSV file.
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>4. Add Candidates</strong>
+
+                <span>
+                    Candidates are managed separately after the
+                    election has been created.
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>5. Start Election</strong>
+
+                <span>
+                    An election must have at least one candidate
+                    before it can be started.
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>Election Status</strong>
+
+                <span>
+                    Newly created elections begin in Draft state.
+                    The administrator controls the election lifecycle
+                    through the Election Management page.
+                </span>
+
+            </div>
+
+
+            <div class="draft-badge">
+                New Election • Draft
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const eligibilityRadios =
+    document.querySelectorAll(
+        'input[name="eligibility_type"]'
+    );
+
+const selectedAadhaarSection =
+    document.getElementById(
+        'selectedAadhaarSection'
+    );
+
+
+function updateEligibilitySection() {
+
+    let selectedValue = null;
+
+    eligibilityRadios.forEach(
+        function(radio) {
+
+            if (radio.checked) {
+
+                selectedValue =
+                    radio.value;
+
+            }
+
+        }
+    );
+
+
+    if (selectedValue === 'SELECTED') {
+
+        selectedAadhaarSection.style.display =
+            'block';
+
+    } else {
+
+        selectedAadhaarSection.style.display =
+            'none';
+
+    }
+
+}
+
+
+eligibilityRadios.forEach(
+    function(radio) {
+
+        radio.addEventListener(
+            'change',
+            updateEligibilitySection
+        );
+
+    }
+);
+
+
+updateEligibilitySection();
+
+</script>
+
+{% endblock %}

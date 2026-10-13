@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Face Verification - {{ election.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Face Verification</h1>
+
+    <h2>{{ election.name }}</h2>
+
+    <p>
+        You selected:
+        <strong>{{ candidate.name }}</strong>
+    </p>
+
+    <p>
+        Please verify your face before continuing to the voting OTP.
+    </p>
+
+    <br>
+
+    <!-- Camera -->
+    <video
+        id="camera"
+        width="500"
+        height="375"
+        autoplay
+        playsinline
+        muted
+        style="border: 1px solid black;"
+    ></video>
+
+    <br><br>
+
+    <button
+        type="button"
+        id="startCameraButton"
+        onclick="startCamera()"
+    >
+        Start Camera
+    </button>
+
+    <button
+        type="button"
+        id="captureButton"
+        onclick="capturePhoto()"
+        disabled
+    >
+        Capture & Verify
+    </button>
+
+    <button
+        type="button"
+        id="stopCameraButton"
+        onclick="stopCamera()"
+        disabled
+    >
+        Stop Camera
+    </button>
+
+    <br><br>
+
+    <canvas
+        id="canvas"
+        width="500"
+        height="375"
+        style="display:none;"
+    ></canvas>
+
+    <p id="status">
+        Click "Start Camera" to begin face verification.
+    </p>
+
+</div>
+
+
+<script>
+
+const video = document.getElementById('camera');
+const canvas = document.getElementById('canvas');
+
+const startCameraButton =
+    document.getElementById('startCameraButton');
+
+const captureButton =
+    document.getElementById('captureButton');
+
+const stopCameraButton =
+    document.getElementById('stopCameraButton');
+
+const statusText =
+    document.getElementById('status');
+
+let stream = null;
+
+
+// =========================================================
+// START CAMERA
+// =========================================================
+
+async function startCamera() {
+
+    statusText.innerText =
+        'Requesting camera access...';
+
+    startCameraButton.disabled = true;
+
+    try {
+
+        // Make sure browser supports camera
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
+
+            throw new Error(
+                'Camera access is not supported by this browser.'
+            );
+        }
+
+        // Request front camera
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: 'user',
+                width: {
+                    ideal: 500
+                },
+                height: {
+                    ideal: 375
+                }
+            },
+            audio: false
+        });
+
+        // Attach camera stream
+        video.srcObject = stream;
+
+        await video.play();
+
+        statusText.innerText =
+            'Camera ready. Position your face inside the frame.';
+
+        captureButton.disabled = false;
+        stopCameraButton.disabled = false;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            'Camera error:',
+            error
+        );
+
+        console.error(
+            'Error name:',
+            error.name
+        );
+
+        console.error(
+            'Error message:',
+            error.message
+        );
+
+        startCameraButton.disabled = false;
+        captureButton.disabled = true;
+        stopCameraButton.disabled = true;
+
+        if (error.name === 'NotAllowedError') {
+
+            statusText.innerText =
+                'Camera permission was denied. ' +
+                'Please allow camera access for this site ' +
+                'and try again.';
+
+        }
+
+        else if (error.name === 'NotFoundError') {
+
+            statusText.innerText =
+                'No camera was found on this device.';
+
+        }
+
+        else if (error.name === 'NotReadableError') {
+
+            statusText.innerText =
+                'The camera is currently being used by another application. ' +
+                'Close the Camera app and try again.';
+
+        }
+
+        else if (error.name === 'OverconstrainedError') {
+
+            statusText.innerText =
+                'The selected camera settings are not supported. ' +
+                'Please try again.';
+
+        }
+
+        else {
+
+            statusText.innerText =
+                'Unable to access camera: ' +
+                error.message;
+        }
+    }
+}
+
+
+// =========================================================
+// STOP CAMERA
+// =========================================================
+
+function stopCamera() {
+
+    if (stream) {
+
+        stream.getTracks().forEach(
+            function(track) {
+                track.stop();
+            }
+        );
+
+        stream = null;
+    }
+
+    video.srcObject = null;
+
+    captureButton.disabled = true;
+    stopCameraButton.disabled = true;
+    startCameraButton.disabled = false;
+
+    statusText.innerText =
+        'Camera stopped.';
+}
+
+
+// =========================================================
+// CAPTURE PHOTO
+// =========================================================
+
+function capturePhoto() {
+
+    if (!stream) {
+
+        statusText.innerText =
+            'Please start the camera first.';
+
+        return;
+    }
+
+    if (video.readyState < 2) {
+
+        statusText.innerText =
+            'Camera is not ready yet. Please wait.';
+
+        return;
+    }
+
+    const context =
+        canvas.getContext('2d');
+
+    context.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    statusText.innerText =
+        'Verifying your face...';
+
+    captureButton.disabled = true;
+    startCameraButton.disabled = true;
+    stopCameraButton.disabled = true;
+
+
+    // =====================================================
+    // CONVERT CAMERA IMAGE TO FILE
+    // =====================================================
+
+    canvas.toBlob(
+
+        function(blob) {
+
+            if (!blob) {
+
+                statusText.innerText =
+                    'Unable to capture camera image.';
+
+                captureButton.disabled = false;
+                stopCameraButton.disabled = false;
+
+                return;
+            }
+
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                'live_photo',
+                blob,
+                'live_face.jpg'
+            );
+
+
+            // =================================================
+            // SEND IMAGE TO DJANGO
+            // =================================================
+
+            fetch(
+                "{% url 'vote_face_verification' election.id %}",
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'X-CSRFToken':
+                            getCookie('csrftoken')
+                    },
+
+                    body: formData
+                }
+            )
+
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Server returned HTTP ' +
+                        response.status
+                    );
+                }
+
+                return response.json();
+            })
+
+            .then(function(data) {
+
+                console.log(
+                    'Face verification response:',
+                    data
+                );
+
+
+                if (data.success) {
+
+                    statusText.innerText =
+                        data.message;
+
+
+                    // Stop camera
+                    stopCamera();
+
+
+                    // Go to voting OTP page
+                    window.location.href =
+                        data.redirect_url;
+
+                }
+
+                else {
+
+                    statusText.innerText =
+                        data.message;
+
+                    captureButton.disabled = false;
+                    stopCameraButton.disabled = false;
+                }
+
+            })
+
+            .catch(function(error) {
+
+                console.error(
+                    'Verification error:',
+                    error
+                );
+
+                statusText.innerText =
+                    'An error occurred during face verification. ' +
+                    error.message;
+
+                captureButton.disabled = false;
+                stopCameraButton.disabled = false;
+            });
+
+        },
+
+        'image/jpeg',
+        0.9
+    );
+}
+
+
+// =========================================================
+// GET CSRF COOKIE
+// =========================================================
+
+function getCookie(name) {
+
+    let cookieValue = null;
+
+    if (
+        document.cookie &&
+        document.cookie !== ''
+    ) {
+
+        const cookies =
+            document.cookie.split(';');
+
+        for (
+            let i = 0;
+            i < cookies.length;
+            i++
+        ) {
+
+            const cookie =
+                cookies[i].trim();
+
+            if (
+                cookie.substring(
+                    0,
+                    name.length + 1
+                ) ===
+                (name + '=')
+            ) {
+
+                cookieValue =
+                    decodeURIComponent(
+                        cookie.substring(
+                            name.length + 1
+                        )
+                    );
+
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+}
+
+
+// =========================================================
+// STOP CAMERA WHEN LEAVING PAGE
+// =========================================================
+
+window.addEventListener(
+    'beforeunload',
+    function() {
+
+        if (stream) {
+
+            stream.getTracks().forEach(
+                function(track) {
+                    track.stop();
+                }
+            );
+        }
+    }
+);
+
+</script>
+
+{% endblock %}

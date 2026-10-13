@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Election Results | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Election Results</h1>
+
+    <p>
+        <a href="{% url 'admin_dashboard' %}">
+            ← Back to Dashboard
+        </a>
+    </p>
+
+    <hr>
+
+    <h2>Select Election</h2>
+
+    <form method="GET">
+
+        <select name="election" required>
+
+            <option value="">
+                -- Select Election --
+            </option>
+
+            {% for election in elections %}
+
+                <option
+                    value="{{ election.id }}"
+                    {% if selected_election and selected_election.id == election.id %}
+                        selected
+                    {% endif %}
+                >
+                    {{ election.name }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+        <button type="submit">
+            View Results
+        </button>
+
+    </form>
+
+    {% if selected_election %}
+
+        <hr>
+
+        <h2>
+            {{ selected_election.name }}
+        </h2>
+
+        <p>
+            <strong>Status:</strong>
+            {{ selected_election.get_status_display }}
+        </p>
+
+        <p>
+            <strong>Results Published:</strong>
+
+            {% if selected_election.results_published %}
+                Yes
+            {% else %}
+                No
+            {% endif %}
+
+        </p>
+
+        <hr>
+
+        <h2>Vote Count</h2>
+
+        {% if results %}
+
+            {% for result in results %}
+
+                <div>
+
+                    <h3>
+                        {{ result.candidate.name }}
+                    </h3>
+
+                    {% if result.candidate.party %}
+
+                        <p>
+                            <strong>Party:</strong>
+                            {{ result.candidate.party }}
+                        </p>
+
+                    {% endif %}
+
+                    <p>
+                        <strong>Votes:</strong>
+                        {{ result.vote_count }}
+                    </p>
+
+                </div>
+
+                <hr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>
+                No candidates are registered for this election.
+            </p>
+
+        {% endif %}
+
+
+        {% if selected_election.status == 'CLOSED' %}
+
+            {% if selected_election.results_published %}
+
+                <p>
+                    <strong>
+                        Results have already been published.
+                    </strong>
+                </p>
+
+            {% else %}
+
+                <form
+                    method="POST"
+                    action="{% url 'publish_results' selected_election.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button type="submit">
+                        Publish Results
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        {% else %}
+
+            <p>
+                Results can only be published after the election is closed.
+            </p>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

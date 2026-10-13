@@ -1,0 +1,913 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ election.name }} | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* ================================
+       PAGE
+    ================================= */
+
+    .election-page {
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 35px 20px 60px;
+        color: #e5e7eb;
+    }
+
+
+    /* ================================
+       ELECTION HEADER
+    ================================= */
+
+    .election-header {
+        background: #151a21;
+        border: 1px solid #252c36;
+        border-radius: 10px;
+
+        padding: 26px 28px;
+        margin-bottom: 22px;
+
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .election-header h1 {
+        margin: 0 0 10px;
+
+        color: #f9fafb;
+
+        font-size: 28px;
+        font-weight: 600;
+    }
+
+    .election-description {
+        margin: 0 0 20px;
+
+        max-width: 750px;
+
+        color: #9ca3af;
+
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+
+    /* ================================
+       META
+    ================================= */
+
+    .election-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 28px;
+
+        font-size: 13px;
+        color: #9ca3af;
+    }
+
+    .meta-item strong {
+        color: #d1d5db;
+        font-weight: 600;
+    }
+
+    .status {
+        display: inline-block;
+
+        margin-top: 18px;
+
+        padding: 5px 10px;
+
+        border-radius: 5px;
+
+        background: #172554;
+        border: 1px solid #1e3a8a;
+
+        color: #93c5fd;
+
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+    /* ================================
+       MAIN CARD
+    ================================= */
+
+    .voting-section {
+        background: #151a21;
+
+        border: 1px solid #252c36;
+        border-radius: 10px;
+
+        padding: 28px;
+
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .section-title {
+        margin: 0 0 7px;
+
+        color: #f3f4f6;
+
+        font-size: 21px;
+        font-weight: 600;
+    }
+
+    .section-description {
+        margin: 0 0 24px;
+
+        color: #9ca3af;
+
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+
+    /* ================================
+       VERIFICATION
+    ================================= */
+
+    .verification-section {
+        background: #10151b;
+
+        border: 1px solid #252c36;
+        border-radius: 8px;
+
+        padding: 18px;
+
+        margin-bottom: 28px;
+    }
+
+    .verification-section label {
+        display: block;
+
+        margin-bottom: 8px;
+
+        color: #d1d5db;
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .aadhaar-input {
+        width: 100%;
+        max-width: 330px;
+
+        box-sizing: border-box;
+
+        padding: 11px 13px;
+
+        background: #0d1117;
+
+        border: 1px solid #374151;
+        border-radius: 6px;
+
+        color: #f3f4f6;
+
+        font-size: 15px;
+        letter-spacing: 2px;
+
+        outline: none;
+    }
+
+    .aadhaar-input::placeholder {
+        color: #6b7280;
+    }
+
+    .aadhaar-input:focus {
+        border-color: #3b82f6;
+
+        box-shadow:
+            0 0 0 2px rgba(59, 130, 246, 0.12);
+    }
+
+    .input-help {
+        display: block;
+
+        margin-top: 7px;
+
+        color: #6b7280;
+
+        font-size: 12px;
+    }
+
+
+    /* ================================
+       CANDIDATES
+    ================================= */
+
+    .candidate-heading {
+        margin-bottom: 16px;
+    }
+
+    .candidate-heading h2 {
+        margin: 0 0 5px;
+
+        color: #f3f4f6;
+
+        font-size: 19px;
+        font-weight: 600;
+    }
+
+    .candidate-heading p {
+        margin: 0;
+
+        color: #6b7280;
+
+        font-size: 13px;
+    }
+
+    .candidate-list {
+        display: grid;
+
+        grid-template-columns:
+            repeat(auto-fit, minmax(260px, 1fr));
+
+        gap: 12px;
+    }
+
+
+    /* ================================
+       CANDIDATE CARD
+    ================================= */
+
+    .candidate-card {
+        display: block;
+
+        position: relative;
+
+        background: #10151b;
+
+        border: 1px solid #2b333e;
+        border-radius: 8px;
+
+        padding: 16px;
+
+        cursor: pointer;
+
+        transition:
+            border-color 0.15s ease,
+            background 0.15s ease;
+    }
+
+    .candidate-card:hover {
+        background: #151b23;
+        border-color: #3b82f6;
+    }
+
+    .candidate-card:has(input:checked) {
+        background: #111c2d;
+        border-color: #3b82f6;
+    }
+
+    .candidate-radio {
+        position: absolute;
+
+        top: 17px;
+        right: 17px;
+
+        accent-color: #3b82f6;
+    }
+
+    .candidate-content {
+        padding-right: 25px;
+    }
+
+
+    /* ================================
+       CANDIDATE IMAGE
+    ================================= */
+
+    .candidate-photo {
+        width: 58px;
+        height: 58px;
+
+        object-fit: cover;
+
+        border-radius: 7px;
+
+        border: 1px solid #303846;
+
+        margin-bottom: 11px;
+    }
+
+    .candidate-placeholder {
+        width: 58px;
+        height: 58px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 7px;
+
+        background: #1f2937;
+
+        color: #9ca3af;
+
+        font-size: 20px;
+        font-weight: 600;
+
+        margin-bottom: 11px;
+    }
+
+
+    /* ================================
+       CANDIDATE TEXT
+    ================================= */
+
+    .candidate-name {
+        margin: 0 0 4px;
+
+        color: #f3f4f6;
+
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .candidate-party {
+        margin: 0 0 7px;
+
+        color: #60a5fa;
+
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .candidate-description {
+        margin: 0;
+
+        color: #9ca3af;
+
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+
+    /* ================================
+       CONTINUE BUTTON
+    ================================= */
+
+    .continue-button {
+        margin-top: 22px;
+
+        padding: 11px 18px;
+
+        background: #2563eb;
+
+        border: none;
+        border-radius: 6px;
+
+        color: #ffffff;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: background 0.15s ease;
+    }
+
+    .continue-button:hover {
+        background: #1d4ed8;
+    }
+
+
+    /* ================================
+       ALREADY VOTED
+    ================================= */
+
+    .already-voted {
+        text-align: center;
+
+        padding: 20px 10px 10px;
+    }
+
+    .success-mark {
+        width: 42px;
+        height: 42px;
+
+        margin: 0 auto 15px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #13251b;
+
+        border: 1px solid #1f4d31;
+
+        color: #4ade80;
+
+        font-size: 20px;
+    }
+
+    .already-voted h2 {
+        margin: 0 0 8px;
+
+        color: #f3f4f6;
+
+        font-size: 21px;
+        font-weight: 600;
+    }
+
+    .already-voted > p {
+        margin: 0 0 22px;
+
+        color: #9ca3af;
+
+        font-size: 14px;
+    }
+
+
+    /* ================================
+       CONFIRMATION
+    ================================= */
+
+    .confirmation {
+        max-width: 600px;
+        margin: 0 auto;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 17px;
+
+        text-align: left;
+
+        background: #10151b;
+
+        border: 1px solid #252c36;
+        border-radius: 8px;
+    }
+
+    .confirmation h3 {
+        margin: 0 0 4px;
+
+        color: #e5e7eb;
+
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .confirmation p {
+        margin: 0;
+
+        color: #6b7280;
+
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .download-button {
+        display: inline-block;
+
+        padding: 9px 13px;
+
+        background: #1f2937;
+
+        border: 1px solid #374151;
+        border-radius: 6px;
+
+        color: #dbeafe;
+
+        text-decoration: none;
+
+        font-size: 12px;
+        font-weight: 600;
+
+        white-space: nowrap;
+    }
+
+    .download-button:hover {
+        background: #263244;
+        border-color: #4b5563;
+    }
+
+
+    /* ================================
+       NO CANDIDATES
+    ================================= */
+
+    .no-candidates {
+        padding: 20px;
+
+        background: #10151b;
+
+        border: 1px dashed #374151;
+        border-radius: 8px;
+
+        text-align: center;
+
+        color: #6b7280;
+
+        font-size: 14px;
+    }
+
+
+    /* ================================
+       BACK LINK
+    ================================= */
+
+    .back-link {
+        display: inline-block;
+
+        margin-top: 20px;
+
+        color: #60a5fa;
+
+        text-decoration: none;
+
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .back-link:hover {
+        color: #93c5fd;
+        text-decoration: underline;
+    }
+
+
+    /* ================================
+       MOBILE
+    ================================= */
+
+    @media (max-width: 650px) {
+
+        .election-page {
+            padding: 20px 14px 40px;
+        }
+
+        .election-header {
+            padding: 22px;
+        }
+
+        .election-header h1 {
+            font-size: 24px;
+        }
+
+        .election-meta {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .voting-section {
+            padding: 20px;
+        }
+
+        .confirmation {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .download-button {
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+
+<div class="election-page">
+
+
+    <!-- =================================
+         ELECTION HEADER
+    ================================== -->
+
+    <div class="election-header">
+
+        <h1>
+            {{ election.name }}
+        </h1>
+
+
+        {% if election.description %}
+
+            <p class="election-description">
+                {{ election.description }}
+            </p>
+
+        {% endif %}
+
+
+        <div class="election-meta">
+
+            <div class="meta-item">
+
+                <strong>Start:</strong>
+                {{ election.start_date }}
+
+            </div>
+
+
+            <div class="meta-item">
+
+                <strong>End:</strong>
+                {{ election.end_date }}
+
+            </div>
+
+        </div>
+
+
+        <span class="status">
+
+            {{ election.get_status_display }}
+
+        </span>
+
+    </div>
+
+
+
+    <!-- =================================
+         VOTING SECTION
+    ================================== -->
+
+    <div class="voting-section">
+
+
+        {% if has_voted %}
+
+
+            <!-- Already Voted -->
+
+            <div class="already-voted">
+
+                <div class="success-mark">
+                    ✓
+                </div>
+
+
+                <h2>
+                    You have already voted
+                </h2>
+
+
+                <p>
+                    Your vote for this election has already
+                    been recorded.
+                </p>
+
+
+                {% if existing_vote %}
+
+                    <div class="confirmation">
+
+                        <div>
+
+                            <h3>
+                                Vote Confirmation
+                            </h3>
+
+                            <p>
+                                Download your ProjectVote
+                                confirmation PDF for your records.
+                            </p>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'download_vote_confirmation' existing_vote.id %}"
+                            class="download-button"
+                        >
+                            Download PDF
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- Voter Verification -->
+
+            <h2 class="section-title">
+                Voter Verification
+            </h2>
+
+
+            <p class="section-description">
+                Enter the 5-digit Aadhaar number registered
+                with your account before selecting your candidate.
+            </p>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <!-- Aadhaar -->
+
+                <div class="verification-section">
+
+                    <label for="aadhaar_number">
+                        Aadhaar Number
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="aadhaar_number"
+                        name="aadhaar_number"
+                        class="aadhaar-input"
+                        maxlength="5"
+                        minlength="5"
+                        pattern="[0-9]{5}"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        placeholder="Enter 5-digit Aadhaar"
+                        required
+                    >
+
+
+                    <small class="input-help">
+                        Enter exactly 5 digits.
+                    </small>
+
+                </div>
+
+
+                <!-- Candidates -->
+
+                <div class="candidate-heading">
+
+                    <h2>
+                        Select Your Candidate
+                    </h2>
+
+                    <p>
+                        Select one candidate to continue.
+                    </p>
+
+                </div>
+
+
+                {% if candidates %}
+
+                    <div class="candidate-list">
+
+
+                        {% for candidate in candidates %}
+
+                            <label class="candidate-card">
+
+                                <input
+                                    type="radio"
+                                    name="candidate"
+                                    value="{{ candidate.id }}"
+                                    class="candidate-radio"
+                                    required
+                                >
+
+
+                                <div class="candidate-content">
+
+
+                                    {% if candidate.photo %}
+
+                                        <img
+                                            src="{{ candidate.photo.url }}"
+                                            alt="{{ candidate.name }}"
+                                            class="candidate-photo"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="candidate-placeholder">
+
+                                            {{ candidate.name|first|upper }}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <h3 class="candidate-name">
+                                        {{ candidate.name }}
+                                    </h3>
+
+
+                                    {% if candidate.party %}
+
+                                        <p class="candidate-party">
+                                            {{ candidate.party }}
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    {% if candidate.description %}
+
+                                        <p class="candidate-description">
+                                            {{ candidate.description }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </label>
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="continue-button"
+                    >
+                        Continue to Face Verification
+                    </button>
+
+
+                {% else %}
+
+                    <div class="no-candidates">
+
+                        No candidates are available
+                        for this election.
+
+                    </div>
+
+                {% endif %}
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =================================
+         BACK
+    ================================== -->
+
+    <a
+        href="{% url 'election_list' %}"
+        class="back-link"
+    >
+        ← Back to Elections
+    </a>
+
+</div>
+
+
+<script>
+
+const aadhaarInput =
+    document.getElementById(
+        'aadhaar_number'
+    );
+
+
+if (aadhaarInput) {
+
+    aadhaarInput.addEventListener(
+        'input',
+        function() {
+
+            this.value =
+                this.value.replace(
+                    /[^0-9]/g,
+                    ''
+                );
+
+
+            if (this.value.length > 5) {
+
+                this.value =
+                    this.value.substring(
+                        0,
+                        5
+                    );
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+{% endblock %}

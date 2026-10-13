@@ -1,0 +1,1995 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+ProjectVote - Home
+{% endblock %}
+
+
+{% block body_class %}
+theme-home
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* ==================================================
+       HOME PAGE
+    ================================================== */
+
+
+    /* ==================================================
+       HERO
+    ================================================== */
+
+    .home-hero {
+
+        min-height:
+            570px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        position:
+            relative;
+
+        padding:
+            60px 0;
+
+        overflow:
+            hidden;
+    }
+
+
+    .hero-content {
+
+        width:
+            100%;
+
+        max-width:
+            780px;
+
+        position:
+            relative;
+
+        z-index:
+            2;
+    }
+
+
+    .hero-eyebrow {
+
+        display:
+            inline-block;
+
+        margin-bottom:
+            18px;
+
+        padding:
+            7px 13px;
+
+        border-radius:
+            20px;
+
+        background:
+            rgba(255,255,255,0.10);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.18);
+
+        color:
+            rgba(255,255,255,0.82);
+
+        font-size:
+            13px;
+
+        font-weight:
+            600;
+
+        backdrop-filter:
+            blur(8px);
+    }
+
+
+    .hero-title {
+
+        font-size:
+            clamp(42px, 7vw, 76px);
+
+        line-height:
+            1.03;
+
+        font-weight:
+            700;
+
+        letter-spacing:
+            -2.5px;
+
+        color:
+            #ffffff;
+
+        margin-bottom:
+            22px;
+
+        text-shadow:
+            0 8px 35px
+            rgba(0,0,0,0.30);
+    }
+
+
+    .hero-title span {
+
+        color:
+            #ff79c9;
+
+        text-shadow:
+            0 0 25px
+            rgba(255,121,201,0.35);
+    }
+
+
+    .hero-description {
+
+        max-width:
+            650px;
+
+        color:
+            rgba(255,255,255,0.82);
+
+        font-size:
+            18px;
+
+        line-height:
+            1.75;
+
+        margin-bottom:
+            30px;
+    }
+
+
+    .hero-actions {
+
+        display:
+            flex;
+
+        flex-wrap:
+            wrap;
+
+        gap:
+            12px;
+
+        margin-top:
+            25px;
+    }
+
+
+    .hero-actions a {
+
+        margin:
+            0;
+    }
+
+
+    .hero-primary {
+
+        background:
+            linear-gradient(
+                135deg,
+                #ed4fa5,
+                #8a62e8
+            ) !important;
+
+        border:
+            none !important;
+
+        padding:
+            13px 22px !important;
+    }
+
+
+    .hero-secondary {
+
+        padding:
+            13px 22px !important;
+    }
+
+
+    /* ==================================================
+       SUNSET DECORATION
+    ================================================== */
+
+    .sun {
+
+        position:
+            absolute;
+
+        width:
+            210px;
+
+        height:
+            210px;
+
+        border-radius:
+            50%;
+
+        right:
+            8%;
+
+        bottom:
+            70px;
+
+        background:
+            linear-gradient(
+                180deg,
+                #ffd08a,
+                #ff8a91
+            );
+
+        box-shadow:
+            0 0 80px
+            rgba(255,160,120,0.35);
+
+        opacity:
+            0.85;
+    }
+
+
+    .horizon {
+
+        position:
+            absolute;
+
+        left:
+            -5%;
+
+        right:
+            -5%;
+
+        bottom:
+            0;
+
+        height:
+            95px;
+
+        background:
+            linear-gradient(
+                180deg,
+                transparent,
+                rgba(5,10,20,0.72)
+            );
+
+        pointer-events:
+            none;
+    }
+
+
+    /* ==================================================
+       INTRO SECTION
+    ================================================== */
+
+    .home-section {
+
+        margin-bottom:
+            55px;
+    }
+
+
+    .section-heading {
+
+        margin-bottom:
+            25px;
+    }
+
+
+    .section-label {
+
+        display:
+            block;
+
+        color:
+            #ff86ca;
+
+        font-size:
+            13px;
+
+        font-weight:
+            600;
+
+        margin-bottom:
+            8px;
+
+        letter-spacing:
+            0.5px;
+    }
+
+
+    .section-title {
+
+        font-size:
+            clamp(28px, 4vw, 40px);
+
+        color:
+            #ffffff;
+
+        font-weight:
+            700;
+
+        line-height:
+            1.2;
+    }
+
+
+    .section-description {
+
+        max-width:
+            760px;
+
+        color:
+            rgba(255,255,255,0.72);
+
+        font-size:
+            15px;
+
+        line-height:
+            1.8;
+
+        margin-top:
+            12px;
+    }
+
+
+    /* ==================================================
+       INFORMATION CARDS
+    ================================================== */
+
+    .info-grid {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap:
+            18px;
+    }
+
+
+    .info-card {
+
+        padding:
+            28px;
+
+        min-height:
+            220px;
+
+        background:
+            rgba(8,18,38,0.54);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.14);
+
+        border-radius:
+            15px;
+
+        backdrop-filter:
+            blur(12px);
+
+        box-shadow:
+            0 18px 40px
+            rgba(0,0,0,0.16);
+
+        transition:
+            transform 0.25s ease,
+            background 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+
+    .info-card:hover {
+
+        transform:
+            translateY(-5px);
+
+        background:
+            rgba(10,22,45,0.68);
+
+        border-color:
+            rgba(255,255,255,0.25);
+    }
+
+
+    .card-number {
+
+        color:
+            #73c8ff;
+
+        font-size:
+            13px;
+
+        font-weight:
+            700;
+
+        margin-bottom:
+            18px;
+    }
+
+
+    .info-card h3 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            20px;
+
+        margin-bottom:
+            12px;
+    }
+
+
+    .info-card p {
+
+        color:
+            rgba(255,255,255,0.65);
+
+        font-size:
+            14px;
+
+        line-height:
+            1.75;
+    }
+
+
+    /* ==================================================
+       WHY ELECTIONS MATTER
+    ================================================== */
+
+    .election-section {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap:
+            22px;
+
+        align-items:
+            stretch;
+    }
+
+
+    .election-main {
+
+        padding:
+            34px;
+
+        background:
+            rgba(8,18,38,0.58);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.15);
+
+        border-radius:
+            16px;
+
+        backdrop-filter:
+            blur(12px);
+
+        box-shadow:
+            0 20px 50px
+            rgba(0,0,0,0.18);
+    }
+
+
+    .election-main h3 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            24px;
+
+        margin-bottom:
+            16px;
+    }
+
+
+    .election-main p {
+
+        color:
+            rgba(255,255,255,0.72);
+
+        font-size:
+            15px;
+
+        line-height:
+            1.85;
+
+        margin-bottom:
+            15px;
+    }
+
+
+    .election-highlight {
+
+        padding:
+            34px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255,96,177,0.16),
+                rgba(93,118,255,0.14)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.15);
+
+        border-radius:
+            16px;
+
+        backdrop-filter:
+            blur(12px);
+    }
+
+
+    .election-highlight h3 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            22px;
+
+        margin-bottom:
+            20px;
+    }
+
+
+    .importance-item {
+
+        display:
+            flex;
+
+        gap:
+            15px;
+
+        margin-bottom:
+            20px;
+    }
+
+
+    .importance-number {
+
+        min-width:
+            34px;
+
+        height:
+            34px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        border-radius:
+            50%;
+
+        background:
+            rgba(255,255,255,0.10);
+
+        color:
+            #ff86ca;
+
+        font-size:
+            13px;
+
+        font-weight:
+            700;
+    }
+
+
+    .importance-text h4 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            15px;
+
+        margin-bottom:
+            5px;
+    }
+
+
+    .importance-text p {
+
+        color:
+            rgba(255,255,255,0.60);
+
+        font-size:
+            13px;
+
+        line-height:
+            1.6;
+    }
+
+
+    /* ==================================================
+       HOW PROJECTVOTE WORKS
+    ================================================== */
+
+    .steps-grid {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap:
+            15px;
+    }
+
+
+    .step {
+
+        padding:
+            25px;
+
+        background:
+            rgba(8,18,38,0.52);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.13);
+
+        border-radius:
+            14px;
+
+        min-height:
+            190px;
+    }
+
+
+    .step-number {
+
+        color:
+            #ff86ca;
+
+        font-size:
+            28px;
+
+        font-weight:
+            700;
+
+        margin-bottom:
+            20px;
+    }
+
+
+    .step h3 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            17px;
+
+        margin-bottom:
+            10px;
+    }
+
+
+    .step p {
+
+        color:
+            rgba(255,255,255,0.60);
+
+        font-size:
+            13px;
+
+        line-height:
+            1.7;
+    }
+
+
+    /* ==================================================
+       SECURITY
+    ================================================== */
+
+    .security-grid {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap:
+            15px;
+    }
+
+
+    .security-card {
+
+        padding:
+            25px;
+
+        background:
+            rgba(8,18,38,0.54);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.13);
+
+        border-radius:
+            14px;
+
+        text-align:
+            center;
+    }
+
+
+    .security-icon {
+
+        width:
+            50px;
+
+        height:
+            50px;
+
+        margin:
+            0 auto 16px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        border-radius:
+            12px;
+
+        background:
+            rgba(255,255,255,0.08);
+
+        color:
+            #73c8ff;
+
+        font-size:
+            20px;
+
+        font-weight:
+            700;
+    }
+
+
+    .security-card h3 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            16px;
+
+        margin-bottom:
+            8px;
+    }
+
+
+    .security-card p {
+
+        color:
+            rgba(255,255,255,0.58);
+
+        font-size:
+            12px;
+
+        line-height:
+            1.65;
+    }
+
+
+    /* ==================================================
+       ABOUT PROJECT
+    ================================================== */
+
+    .about-project {
+
+        padding:
+            38px;
+
+        background:
+            rgba(8,18,38,0.58);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.15);
+
+        border-radius:
+            16px;
+
+        backdrop-filter:
+            blur(12px);
+
+        box-shadow:
+            0 20px 50px
+            rgba(0,0,0,0.18);
+    }
+
+
+    .about-project p {
+
+        max-width:
+            900px;
+
+        color:
+            rgba(255,255,255,0.70);
+
+        font-size:
+            15px;
+
+        line-height:
+            1.85;
+
+        margin-bottom:
+            16px;
+    }
+
+
+    /* ==================================================
+       FUTURE SCOPE
+    ================================================== */
+
+    .future-grid {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap:
+            15px;
+    }
+
+
+    .future-item {
+
+        padding:
+            23px;
+
+        display:
+            flex;
+
+        gap:
+            15px;
+
+        background:
+            rgba(8,18,38,0.50);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.12);
+
+        border-radius:
+            13px;
+    }
+
+
+    .future-dot {
+
+        width:
+            10px;
+
+        height:
+            10px;
+
+        min-width:
+            10px;
+
+        margin-top:
+            6px;
+
+        border-radius:
+            50%;
+
+        background:
+            #ff79c9;
+
+        box-shadow:
+            0 0 12px
+            rgba(255,121,201,0.5);
+    }
+
+
+    .future-item h3 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            16px;
+
+        margin-bottom:
+            6px;
+    }
+
+
+    .future-item p {
+
+        color:
+            rgba(255,255,255,0.58);
+
+        font-size:
+            13px;
+
+        line-height:
+            1.65;
+    }
+
+
+    /* ==================================================
+       FINAL CALL TO ACTION
+    ================================================== */
+
+    .home-cta {
+
+        padding:
+            45px;
+
+        text-align:
+            center;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(239,79,165,0.17),
+                rgba(91,104,231,0.18)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.16);
+
+        border-radius:
+            18px;
+
+        backdrop-filter:
+            blur(12px);
+    }
+
+
+    .home-cta h2 {
+
+        color:
+            #ffffff;
+
+        font-size:
+            clamp(28px, 4vw, 38px);
+
+        margin-bottom:
+            12px;
+    }
+
+
+    .home-cta p {
+
+        color:
+            rgba(255,255,255,0.68);
+
+        font-size:
+            15px;
+
+        margin-bottom:
+            22px;
+    }
+
+
+    .home-cta .button-group {
+
+        justify-content:
+            center;
+
+        margin:
+            0;
+    }
+
+
+    /* ==================================================
+       RESPONSIVE
+    ================================================== */
+
+    @media (max-width: 900px) {
+
+        .sun {
+
+            width:
+                150px;
+
+            height:
+                150px;
+
+            right:
+                5%;
+
+            bottom:
+                80px;
+        }
+
+
+        .info-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .election-section {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .steps-grid {
+
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+
+        .security-grid {
+
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+        .home-hero {
+
+            min-height:
+                520px;
+
+            padding:
+                40px 0;
+        }
+
+
+        .hero-title {
+
+            font-size:
+                43px;
+
+            letter-spacing:
+                -1.5px;
+        }
+
+
+        .hero-description {
+
+            font-size:
+                15px;
+        }
+
+
+        .sun {
+
+            width:
+                110px;
+
+            height:
+                110px;
+
+            right:
+                3%;
+
+            bottom:
+                80px;
+        }
+
+
+        .steps-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .security-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .future-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .election-main,
+        .election-highlight,
+        .about-project,
+        .home-cta {
+
+            padding:
+                25px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<!-- ==================================================
+     HERO
+================================================== -->
+
+<section class="home-hero">
+
+
+    <div class="hero-content">
+
+
+        <div class="hero-eyebrow">
+            A DIGITAL VOTING PROJECT
+        </div>
+
+
+        <h1 class="hero-title">
+
+            Your voice.
+            <br>
+
+            Your <span>vote.</span>
+
+        </h1>
+
+
+        <p class="hero-description">
+
+            ProjectVote is an academic project exploring
+            how modern technology can be used to create
+            a secure, accessible and convenient online
+            voting experience.
+
+        </p>
+
+
+        <div class="hero-actions">
+
+
+            <a
+                href="{% url 'election_information' %}"
+                class="hero-primary"
+            >
+                Explore Elections
+            </a>
+
+
+            <a
+                href="{% url 'register' %}"
+                class="hero-secondary"
+            >
+                Register to Vote
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUN -->
+
+    <div class="sun"></div>
+
+
+    <!-- HORIZON -->
+
+    <div class="horizon"></div>
+
+</section>
+
+
+
+<!-- ==================================================
+     WHY ELECTIONS MATTER
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            WHY IT MATTERS
+        </span>
+
+
+        <h2 class="section-title">
+            Why elections matter
+        </h2>
+
+
+        <p class="section-description">
+
+            Elections give people the opportunity to
+            participate in decisions that affect their
+            communities and future. A voting system should
+            make this participation clear, accessible and
+            trustworthy.
+
+        </p>
+
+    </div>
+
+
+    <div class="info-grid">
+
+
+        <div class="info-card">
+
+            <div class="card-number">
+                01
+            </div>
+
+
+            <h3>
+                Representation
+            </h3>
+
+
+            <p>
+
+                Elections allow citizens to choose
+                representatives who reflect their
+                interests, priorities and expectations.
+
+            </p>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="card-number">
+                02
+            </div>
+
+
+            <h3>
+                Participation
+            </h3>
+
+
+            <p>
+
+                Voting provides people with a direct
+                opportunity to participate in the
+                democratic process.
+
+            </p>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <div class="card-number">
+                03
+            </div>
+
+
+            <h3>
+                Accountability
+            </h3>
+
+
+            <p>
+
+                Elections give citizens a way to evaluate
+                representatives and influence the direction
+                of their communities.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     ELECTIONS
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            DEMOCRATIC PARTICIPATION
+        </span>
+
+
+        <h2 class="section-title">
+            Every vote has a purpose.
+        </h2>
+
+    </div>
+
+
+    <div class="election-section">
+
+
+        <div class="election-main">
+
+
+            <h3>
+                The role of elections
+            </h3>
+
+
+            <p>
+
+                Elections are an important part of
+                representative democracy. They provide
+                a structured way for people to express
+                their choices and select representatives.
+
+            </p>
+
+
+            <p>
+
+                For an election system to work effectively,
+                voters need confidence that their identity
+                can be verified, their vote can be recorded
+                correctly, and that they can participate
+                without unnecessary difficulty.
+
+            </p>
+
+
+            <div class="button-group">
+
+                <a
+                    href="{% url 'election_information' %}"
+                    class="primary-button"
+                >
+                    View Elections
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="election-highlight">
+
+
+            <h3>
+                What makes voting important?
+            </h3>
+
+
+            <div class="importance-item">
+
+                <div class="importance-number">
+                    01
+                </div>
+
+
+                <div class="importance-text">
+
+                    <h4>
+                        Your choice matters
+                    </h4>
+
+
+                    <p>
+                        Voting gives citizens an opportunity
+                        to express their preferences.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="importance-item">
+
+                <div class="importance-number">
+                    02
+                </div>
+
+
+                <div class="importance-text">
+
+                    <h4>
+                        Collective decisions
+                    </h4>
+
+
+                    <p>
+                        Individual votes contribute to
+                        collective outcomes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="importance-item">
+
+                <div class="importance-number">
+                    03
+                </div>
+
+
+                <div class="importance-text">
+
+                    <h4>
+                        Civic participation
+                    </h4>
+
+
+                    <p>
+                        Voting is one way citizens participate
+                        in the democratic process.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     HOW PROJECTVOTE WORKS
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            THE PROCESS
+        </span>
+
+
+        <h2 class="section-title">
+            How ProjectVote works
+        </h2>
+
+
+        <p class="section-description">
+
+            ProjectVote combines multiple verification
+            steps to demonstrate how an online voting
+            workflow can be structured.
+
+        </p>
+
+    </div>
+
+
+    <div class="steps-grid">
+
+
+        <div class="step">
+
+            <div class="step-number">
+                01
+            </div>
+
+
+            <h3>
+                Register
+            </h3>
+
+
+            <p>
+
+                Create a voter account and provide the
+                required voter information.
+
+            </p>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                02
+            </div>
+
+
+            <h3>
+                Verify
+            </h3>
+
+
+            <p>
+
+                Verify your email and complete face
+                verification using the registered photo.
+
+            </p>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                03
+            </div>
+
+
+            <h3>
+                Vote
+            </h3>
+
+
+            <p>
+
+                Select a candidate in an ongoing election
+                and proceed through the voting verification
+                process.
+
+            </p>
+
+        </div>
+
+
+        <div class="step">
+
+            <div class="step-number">
+                04
+            </div>
+
+
+            <h3>
+                Confirm
+            </h3>
+
+
+            <p>
+
+                Confirm the vote using the email OTP
+                generated for the selected election.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     SECURITY
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            SECURITY
+        </span>
+
+
+        <h2 class="section-title">
+            Multiple layers of verification
+        </h2>
+
+
+        <p class="section-description">
+
+            ProjectVote demonstrates several verification
+            mechanisms designed to reduce unauthorized
+            access and prevent duplicate voting.
+
+        </p>
+
+    </div>
+
+
+    <div class="security-grid">
+
+
+        <div class="security-card">
+
+            <div class="security-icon">
+                01
+            </div>
+
+
+            <h3>
+                Voter Information
+            </h3>
+
+
+            <p>
+                Registered voter information is associated
+                with an individual account.
+            </p>
+
+        </div>
+
+
+        <div class="security-card">
+
+            <div class="security-icon">
+                02
+            </div>
+
+
+            <h3>
+                Email OTP
+            </h3>
+
+
+            <p>
+                Email verification adds an additional
+                authentication step.
+            </p>
+
+        </div>
+
+
+        <div class="security-card">
+
+            <div class="security-icon">
+                03
+            </div>
+
+
+            <h3>
+                Face Verification
+            </h3>
+
+
+            <p>
+                Face verification compares the live capture
+                with the registered face.
+            </p>
+
+        </div>
+
+
+        <div class="security-card">
+
+            <div class="security-icon">
+                04
+            </div>
+
+
+            <h3>
+                One Vote
+            </h3>
+
+
+            <p>
+                The system prevents the same voter from
+                voting more than once in an election.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     ABOUT PROJECT
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            ABOUT PROJECTVOTE
+        </span>
+
+
+        <h2 class="section-title">
+            A project exploring digital democracy
+        </h2>
+
+    </div>
+
+
+    <div class="about-project">
+
+
+        <p>
+
+            ProjectVote is an academic project designed
+            to explore the concepts involved in building
+            an online voting system.
+
+        </p>
+
+
+        <p>
+
+            The project focuses on the complete voting
+            workflow, from voter registration and identity
+            verification to election management, candidate
+            selection, vote confirmation and result
+            publication.
+
+        </p>
+
+
+        <p>
+
+            Django is used as the web framework, while
+            email OTP verification and face verification
+            demonstrate additional layers that can be
+            incorporated into a digital voting workflow.
+
+        </p>
+
+
+        <p>
+
+            The goal of ProjectVote is not to replace
+            official government election infrastructure.
+            Instead, it serves as a practical exploration
+            of the technologies, workflows and security
+            considerations involved in online voting.
+
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     FUTURE SCOPE
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            FUTURE SCOPE
+        </span>
+
+
+        <h2 class="section-title">
+            Where ProjectVote can go next
+        </h2>
+
+
+        <p class="section-description">
+
+            The current project provides a foundation that
+            can be expanded with additional technologies,
+            stronger security mechanisms and improved
+            accessibility.
+
+        </p>
+
+    </div>
+
+
+    <div class="future-grid">
+
+
+        <div class="future-item">
+
+            <div class="future-dot"></div>
+
+
+            <div>
+
+                <h3>
+                    Stronger identity verification
+                </h3>
+
+
+                <p>
+                    Explore additional identity verification
+                    mechanisms and stronger authentication
+                    workflows.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="future-item">
+
+            <div class="future-dot"></div>
+
+
+            <div>
+
+                <h3>
+                    Improved accessibility
+                </h3>
+
+
+                <p>
+                    Make the voting experience easier to use
+                    across different devices and for users
+                    with different accessibility needs.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="future-item">
+
+            <div class="future-dot"></div>
+
+
+            <div>
+
+                <h3>
+                    Scalable infrastructure
+                </h3>
+
+
+                <p>
+                    Explore cloud-based infrastructure and
+                    database technologies for larger voting
+                    environments.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="future-item">
+
+            <div class="future-dot"></div>
+
+
+            <div>
+
+                <h3>
+                    Advanced security
+                </h3>
+
+
+                <p>
+                    Investigate stronger encryption,
+                    auditing and security monitoring
+                    techniques.
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     FINAL CALL TO ACTION
+================================================== -->
+
+<section class="home-section">
+
+
+    <div class="home-cta">
+
+
+        <h2>
+            Ready to explore ProjectVote?
+        </h2>
+
+
+        <p>
+            Explore current elections or create your
+            voter account to experience the system.
+        </p>
+
+
+        <div class="button-group">
+
+
+            <a
+                href="{% url 'election_information' %}"
+                class="primary-button"
+            >
+                Explore Elections
+            </a>
+
+
+            <a
+                href="{% url 'register' %}"
+            >
+                Create Account
+            </a>
+
+
+            <a
+                href="{% url 'public_results' %}"
+            >
+                View Results
+            </a>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+{% endblock %}

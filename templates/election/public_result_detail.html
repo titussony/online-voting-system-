@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ election.name }} - Results | ProjectVote
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ election.name }}</h1>
+
+<h2>Election Results</h2>
+
+<p>
+    Final results of the officially published election.
+</p>
+
+<hr>
+
+{% if results %}
+
+    {% for result in results %}
+
+        <h3>
+            {{ result.candidate.name }}
+        </h3>
+
+        {% if result.candidate.party %}
+            <p>
+                Party: {{ result.candidate.party }}
+            </p>
+        {% endif %}
+
+        <p>
+            Votes: <strong>{{ result.vote_count }}</strong>
+        </p>
+
+        <hr>
+
+    {% endfor %}
+
+    {% if winners %}
+
+        <h2>Winner</h2>
+
+        {% for winner in winners %}
+
+            <h3>
+                🏆 {{ winner.name }}
+            </h3>
+
+            {% if winner.party %}
+                <p>
+                    Party: {{ winner.party }}
+                </p>
+            {% endif %}
+
+            <p>
+                Total Votes:
+                <strong>{{ highest_votes }}</strong>
+            </p>
+
+        {% endfor %}
+
+        {% if winners|length > 1 %}
+            <p>
+                <strong>
+                    The election resulted in a tie.
+                </strong>
+            </p>
+        {% endif %}
+
+    {% endif %}
+
+{% else %}
+
+    <p>
+        No votes were recorded for this election.
+    </p>
+
+{% endif %}
+
+<br>
+
+<a href="{% url 'public_results' %}">
+    ← Back to Election Results
+</a>
+
+{% endblock %}
